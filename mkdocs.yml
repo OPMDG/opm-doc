@@ -1,1 +1,4 @@
-site_name: Open PostgreSQL Monitoring 
+site_name: Open PostgreSQL Monitoring
+pages :
+- [ general/ , General]
+- [ opm-core/ , OPM ]
