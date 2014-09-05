@@ -1,4 +1,7 @@
 site_name: Open PostgreSQL Monitoring
 pages :
-- [ general/ , General]
-- [ opm-core/ , OPM ]
+- [ general/getting_started.md]
+- [ general/FAQ.md ]
+- [ opm-core/README.md ]
+- [ opm-core/Installation.md ]
+
