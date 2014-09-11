@@ -21,7 +21,7 @@ Then, using a superuser role:
 
 You'll need to create a first opm admin account:
 
-    postgres@opm=# SELECT create_user('admin1', 'admin1');
+    postgres@opm=# SELECT create_admin('admin1', 'admin1');
 
 
 ## wh_nagios
@@ -43,8 +43,9 @@ Then, using a superuser role :
 
 Then, you need to create a crontab that will process incoming data and dispatch them. As instance, to trigger it every minute:
 
-    * * * * * psql -c 'SELECT wh_nagios.dispatch_record(true)' opm
+    * * * * * psql -c 'SELECT wh_nagios.dispatch_record()' opm
 
+This crontab can belong to any user, as long as it can connect to the PostgreSQL opm database.
 
 To allows a opm role to import data in a warehouse, you need to call "public.grant_dispatch". As instance, for a opm role called "user1" on warehouse "wh_nagios":
 
