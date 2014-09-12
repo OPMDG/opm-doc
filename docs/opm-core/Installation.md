@@ -1,5 +1,9 @@
 # Intallation
 
+## Requirements
+
+To install OPM, you need a 9.3 or more PostgreSQL cluster, standard compiling tools and Nagios. The PostgreSQL cluster and Nagios can be installed on the servers you want, and can be installed on the same server.
+
 ## System
 
 The tool "pg_config" is required, install the PostgreSQL development packages of your Linux distribution if necessary. We suppose that the repositories **opm-core** and **opm-wh_nagios** are stored into **/usr/local/src/opm/**.
