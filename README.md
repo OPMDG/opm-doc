@@ -1,5 +1,5 @@
-opm-doc
+OPM Documentation
 =======
 
 
-See https://github.com/OPMDG/opm-doc/wiki
+See http://opm.readthedocs.org/
