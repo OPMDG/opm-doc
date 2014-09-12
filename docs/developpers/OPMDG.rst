@@ -1,13 +1,12 @@
-Open PostgreSQL Monitoring Development Group (OPMDG)
+OPM Development Group (OPMDG)
 ====================================================
 
 The Open PostgreSQL Development Group (OPMDG) is an international, unincorporated association of individuals and companies who have contributed to the OPM project.
 
 The right to modify the official code base and accept contributions ('pull requests') is hold by a group called the "OPM Committers". The current team of committers is listed below  ::
-
-  * [Julien Rouhaud](https://github.com/rjuju)
-  * [Jehan-Guillaume De Rorthais](https://github.com/ioguix)
-  * [Damien Clochard](https://github.com/daamien)
+  * Julien Rouhaud : https://github.com/rjuju
+  * Jehan-Guillaume De Rorthais : https://github.com/ioguix
+  * Damien Clochard : https://github.com/daamien
 
 The OPM Committers generally act as spokespeople for the OPMDG.
 
