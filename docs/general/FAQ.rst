@@ -16,3 +16,7 @@ Yes ! Currently our data collection process is based on Nagios, because it's one
 
 However we build OPM as an agnostic system that can be plugged on any scheduler. Therefore it is possible de developped connectors with tools like zabbix, centreon, shinken and others. We plan to do it eventually but we don't have a clear roadmap for it yet. If you're interested by such connectors, let us know !
 
+I need enterprise-grade support for this software
+-------------------------------------------------
+
+DALIBO, as the main sponsor of the project, can provide training and support for both PostgreSQL and OPM. See http://www.dalibo.com for more details.
