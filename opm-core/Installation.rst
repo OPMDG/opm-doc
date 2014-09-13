@@ -136,9 +136,10 @@ Reload the /etc/inittab file::
 User interface
 --------------
 
-The default user interface is based on the web framework [Mojolicious](http://www.mojolicio.us/). You need to install::
+The default user interface is based on the web framework [Mojolicious](http://www.mojolicio.us/). You need to install:
+
 * Perl (5.10 or above)
-* Mojolicious (2.98 or above, less than 5.0)
+* Mojolicious (4.50 or above, less than 5.0)
 * Mojolicious::Plugin::I18N
 * PostgreSQL (9.3 or above)
 * A CGI/Perl webserver
@@ -184,7 +185,7 @@ To test the web user interface quickly, you can use either "morbo" or "hypnotoad
     [Fri Nov 29 12:12:53 2013] [info] Listening at "http://*:3000".
     Server available at http://127.0.0.1:3000.
 
-Using "hypnotoad", which suit better for production:
+Using "hypnotoad", which suit better for production::
 
     user:/usr/local/src/opm/ui/opm/opm-core$ hypnotoad -f script/opm
 
@@ -231,3 +232,6 @@ If you want to use "apache", here is a quick configuration sample using CGI::
         </VirtualHost>
 
 (assuming that the directory **/usr/local/src/opm/opm-core/ui** has been symlinked to **/var/www/opm**).
+
+For a complete list and specifications on supported http servers, please check the `Mojolicious official documentation
+<http://mojolicio.us/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT>`_.
