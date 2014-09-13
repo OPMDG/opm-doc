@@ -136,7 +136,7 @@ Reload the /etc/inittab file::
 User interface
 --------------
 
-The default user interface is based on the web framework [Mojolicious](http://www.mojolicio.us/). You need to install:
+The default user interface is based on the web framework Mojolicious_. You need to install:
 
 * Perl (5.10 or above)
 * Mojolicious (4.50 or above, less than 5.0)
@@ -235,3 +235,5 @@ If you want to use "apache", here is a quick configuration sample using CGI::
 
 For a complete list and specifications on supported http servers, please check the `Mojolicious official documentation
 <http://mojolicio.us/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT>`_.
+
+.. _Mojolicious: http://www.mojolicio.us/
