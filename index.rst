@@ -8,8 +8,9 @@ Contents:
    :maxdepth: 2
    :glob:
 
-   opm-core/*
    general/*
+   opm-core/*
+   probes/*
    developpers/*
    LICENSE
 
