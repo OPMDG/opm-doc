@@ -181,7 +181,7 @@ the libpq environment variables.
 The rules with connexions parameters are:
 
 
-\* Parameter \ ``--dbservice SERVICE_NAME``\ 
+\ **Parameter**\  \ ``--dbservice SERVICE_NAME``\ 
  
  Define a new host using the given service. Multiple hosts can be defined by
  giving multiple services seperated by a comma. Eg.
@@ -194,7 +194,7 @@ The rules with connexions parameters are:
  
 
 
-\* Parameters \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\ 
+\ **Parameters**\  \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\ 
  
  One of these parameters is enough to defines a new host. If some other
  parameters are missing, default values are used.
@@ -224,7 +224,7 @@ The rules with connexions parameters are:
  
 
 
-\* Services are define first
+\ **Services are define first**\ 
  
  As instance, giving:
  
@@ -239,7 +239,7 @@ The rules with connexions parameters are:
  
 
 
-\* Mutual exclusion between both methods
+\ **Mutual exclusion between both methods**\ 
  
  You can not overwrite services connexions variables with parameters \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\ 
  
