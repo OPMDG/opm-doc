@@ -324,8 +324,9 @@ Here is the list, descriptions and parameters of available services.
  
  Check the number of wal files.
  
- Perfdata returns the total number of wal files, current number of written wal
- and the current number of recycled wal.
+ Perfdata returns the total number of wal files, current number of written wal,
+ the current number of recycled wal and the rate of wal written to disk since
+ last execution on master clusters.
  
  Critical and Warning thresholds accept either a raw number of file or a
  percentage. In case of percentage, the limit is computed based on:
@@ -656,10 +657,14 @@ Here is the list, descriptions and parameters of available services.
  
  Checks oldest database in transaction age.
  
- Critical and Warning thresholds are optionnal. They accept either a raw
- number or percentage for PostgreSQL 8.2 and more. If percentage is
- given, the thresholds are computed based on the
- "autovacumm_freeze_min_age" parameter.
+ Critical and Warning thresholds are optionnal. They accept either a raw number
+ or percentage for PostgreSQL 8.2 and more. If percentage is given, the
+ thresholds are computed based on the "autovacuum_freeze_max_age" parameter.
+ 100% means some table(s) reached the maximum age and will trigger an autovacuum
+ freeze. Percentage thresholds should therefore be greater than 100%.
+ 
+ Even with no threshold, this service will raise a critical alert if one database
+ has a negative age.
  
  Perfdatas return the age of each database.
  
