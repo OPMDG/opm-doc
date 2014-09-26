@@ -6,7 +6,7 @@ check_pgactivity
 ****************
 
 
-check_pgactivity - PostgreSQL plugins for Nagios
+check_pgactivity - PostgreSQL plugin for Nagios
 
 SYNOPSIS
 ========
@@ -25,14 +25,14 @@ DESCRIPTION
 ===========
 
 
-check_pgactivity is dedicated to monitoring PostgreSQL clusters from Nagios. It
+check_pgactivity is designed to monitor PostgreSQL clusters from Nagios. It
 offers many options to measure and monitor useful performance metrics.
 
 
 \ **-s**\ , \ **--service**\  SERVICE
  
  The nagios service to run. See section SERVICES for a description of available
- services or option \ ``--list``\  for a short service and description list.
+ services or use \ ``--list``\  for a short service and description list.
  
 
 
@@ -62,26 +62,26 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **-S**\ , \ **--dbservice**\  SERVICE_NAME
  
- The service name to use from pg_service.conf to connect.
+ The connection service name from pg_service.conf.
  
 
 
 \ **-w**\ , \ **--warning**\  THRESHOLD
  
- The warning threshold.
+ The Warning threshold.
  
 
 
 \ **-c**\ , \ **--critical**\  THRESHOLD
  
- The critical threshold.
+ The Critical threshold.
  
 
 
 \ **--tmpdir**\  DIRECTORY
  
  Path to a directory where the script can create temporary files. The
- script relies on system default temporary directory if possible.
+ script relies on the system default temporary directory if possible.
  
 
 
@@ -100,9 +100,9 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **-t**\ , \ **--timeout**\  TIMEOUT
  
- Timeout to use (default: "30s"). It can be specified as raw (in second) or as
- an interval. This timeout will be used as statement_timeout for psql and URL
- timeout for minor_version service.
+ Timeout to use (default: "30s"). It can be specified as raw (in seconds) or as
+ an interval. This timeout will be used as *statement_timeout* for psql and URL
+ timeout for the *minor_version* service.
  
 
 
@@ -142,8 +142,8 @@ formats (eg. a size and a percentage).
 
 \ **Percentage**\ 
  
- If threshold is a percentage, the value should finish with a '%' without space
- with the actual value. Eg.: 95%.
+ If threshold is a percentage, the value should end with a '%' (no spaces).
+ For example: 95%.
  
 
 
@@ -151,8 +151,8 @@ formats (eg. a size and a percentage).
  
  If THRESHOLD is an interval, the following units are accepted (not case
  sensitive): s (second), m (minute), h (hour), d (day). You can use more than
- one unit per given value. If not set, the last unit is in seconds. Eg.: "1h 55m
- 6" = "1h55m6s".
+ one unit per given value. If not set, the last unit is in seconds.
+ For example: "1h 55m 6" = "1h55m6s".
  
 
 
@@ -169,21 +169,21 @@ CONNECTIONS
 ==========
 
 
-check_pgactivity allows two different connection specifications: by service or
-by specifying values for host, user, port and database. Moreover, some services
-can run on multiple host or needs to connect to multiple ones.
+check_pgactivity allows two different connection specifications: by service, or
+by specifying values for host, user, port, and database. Moreover, some services
+can run on multiple hosts, or can connect to multiple hosts.
 
-You must specify one of the parameters bellow if the service need to connect
-to your PostgreSQL instance. In other words, check_pgactivity will NOT look for
-the libpq environment variables.
+You must specify one of the parameters below if the service needs to connect
+to your PostgreSQL instance. check_pgactivity will NOT look for
+the *libpq* environment variables.
 
-The rules with connections parameters are:
+The format for connection parameters is:
 
 
 \ **Parameter**\  \ ``--dbservice SERVICE_NAME``\ 
  
  Define a new host using the given service. Multiple hosts can be defined by
- giving multiple services separated by a comma. Eg.
+ listing multiple services separated by a comma. Eg.
  
  
  .. code-block:: perl
@@ -195,7 +195,7 @@ The rules with connections parameters are:
 
 \ **Parameters**\  \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\ 
  
- One of these parameters is enough to defines a new host. If some other
+ One of these parameters is enough to define a new host. If some
  parameters are missing, default values are used.
  
  If multiple values are given, define as many host as maximum given values.
@@ -265,22 +265,22 @@ Descriptions and parameters of available services.
 
 \ **backends**\  (all)
  
- Check the total number of connections on the cluster.
+ Check the total number of connections in the PostgreSQL cluster.
  
  Perfdata contains the number of connections per database.
  
  Critical and Warning thresholds accept either a raw number or a percentage (eg.
- 80%). When a threshold is in percent, it is compared to the cluster parameter
+ 80%). When a threshold is a percentage, it is compared to the cluster parameter
  \ ``max_connections``\ .
  
 
 
 \ **backends_status**\  (8.2+)
  
- Check and report the status of the backends. Depending on your PostgreSQL
+ Check status of all backends (databases). Depending on your PostgreSQL
  version, statuses are: *idle*, *idle in transaction*, *idle in transaction (aborted)*
  (>=9.0 only), *fastpath function call*, *active*, *waiting for lock*, *undefined*,
- *disabled*, and *insufficient privilege*. The last one appears when you are not
+ *disabled*, and *insufficient privilege*. "insufficient privilege" appears when you are not
  allowed to see the statuses of other connections.
  
  This service supports the argument \ ``--exclude REGEX``\  to exclude queries
@@ -288,7 +288,7 @@ Descriptions and parameters of available services.
  \ ``--exclude REGEX``\ .
  
  Critical and Warning thresholds are optional. They accept a list of
- 'status_label=value' separated by comma. Available labels are *idle*, *idle_xact*,
+ 'status_label=value' separated by a comma. Available labels are *idle*, *idle_xact*,
  *aborted_xact*, *fastpath*, *active*, and *waiting*. Values are raw numbers, and empty
  lists are forbidden. Here is an example:
  
@@ -312,7 +312,7 @@ Descriptions and parameters of available services.
  
  This service uses the status file (see \ ``--status-file``\  parameter).
  
- Perfdata contains the size difference for each database since last call.
+ Perfdata contains the size difference for each database since the last execution.
  
  Critical and Warning thresholds accept either a raw number, a percentage, or a
  size (eg. 2.5G).
@@ -327,7 +327,7 @@ Descriptions and parameters of available services.
  the current number of recycled WALs and the rate of WAL written to disk since
  last execution on master clusters.
  
- Critical and Warning thresholds accept either a raw number of files or a
+ Critical and Warning thresholds accept either a raw number of files, or a
  percentage. In case of percentage, the limit is computed based on:
  
  
@@ -374,7 +374,7 @@ Descriptions and parameters of available services.
  This service uses the status file (see \ ``--status-file``\  parameter) with
  PostgreSQL 9.1+.
  
- Perfdata returns oldest analyze per database in seconds. With PostgreSQL
+ Perfdata returns oldest "analyze" per database in seconds. With PostgreSQL
  9.1+, the number of [auto]analyzes per database since last execution is also returned.
  
  Critical and Warning thresholds only accept an interval (eg. 1h30m25s)
