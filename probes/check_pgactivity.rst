@@ -25,9 +25,8 @@ DESCRIPTION
 ===========
 
 
-check_pgactivity is dedicated to monitoring PostgreSQL cluster from Nagios. It
-offers many different services and returns various usefull perfdata for
-metrology.
+check_pgactivity is dedicated to monitoring PostgreSQL clusters from Nagios. It
+offers many options to measure and monitor useful performance metrics.
 
 
 \ **-s**\ , \ **--service**\  SERVICE
@@ -82,7 +81,7 @@ metrology.
 \ **--tmpdir**\  DIRECTORY
  
  Path to a directory where the script can create temporary files. The
- script rely on system default temporary directory if possible.
+ script relies on system default temporary directory if possible.
  
 
 
@@ -94,8 +93,8 @@ metrology.
 
 \ **--status-file**\  PATH
  
- PATH to the file where service status information will be kept between two
- call. Default to check_pgactivity.data in the same directory of the script.
+ PATH to the file where service status information will be kept between successive
+ calls. Default to check_pgactivity.data in the same directory of the script.
  
 
 
@@ -136,9 +135,9 @@ THRESHOLDS
 ==========
 
 
-THRESHOLD given as warning and critical values can either be a raw number, a
-percentage, an interval or a size. Each available service supports one or more
-form (eg. a size and a percentage).
+THRESHOLD emitted as warning or critical values can be a raw number, a
+percentage, an interval, or a size. Each available service supports one or more
+formats (eg. a size and a percentage).
 
 
 \ **Percentage**\ 
@@ -152,7 +151,7 @@ form (eg. a size and a percentage).
  
  If THRESHOLD is an interval, the following units are accepted (not case
  sensitive): s (second), m (minute), h (hour), d (day). You can use more than
- one unit per give value. If not set, the last unit is in seconds. Eg.: "1h 55m
+ one unit per given value. If not set, the last unit is in seconds. Eg.: "1h 55m
  6" = "1h55m6s".
  
 
@@ -166,11 +165,11 @@ integers are accepted. Eg. \ ``1.5MB``\  will be refused, use \ ``1500kB``\ .
 
 
 
-CONNEXIONS
+CONNECTIONS
 ==========
 
 
-check_pgactivity allows two different of connexion specification: by service or
+check_pgactivity allows two different connection specifications: by service or
 by specifying values for host, user, port and database. Moreover, some services
 can run on multiple host or needs to connect to multiple ones.
 
@@ -178,13 +177,13 @@ You must specify one of the parameters bellow if the service need to connect
 to your PostgreSQL instance. In other words, check_pgactivity will NOT look for
 the libpq environment variables.
 
-The rules with connexions parameters are:
+The rules with connections parameters are:
 
 
 \ **Parameter**\  \ ``--dbservice SERVICE_NAME``\ 
  
  Define a new host using the given service. Multiple hosts can be defined by
- giving multiple services seperated by a comma. Eg.
+ giving multiple services separated by a comma. Eg.
  
  
  .. code-block:: perl
@@ -211,7 +210,7 @@ The rules with connexions parameters are:
  
  Means "host=h1 port=5432" and "host=h2 port=5433".
  
- If the number of values is different between parameters, any host that miss a
+ If the number of values is different between parameters, any host missing a
  parameter will use the first given value for this parameter. Eg.:
  
  
@@ -224,9 +223,9 @@ The rules with connexions parameters are:
  
 
 
-\ **Services are define first**\ 
+\ **Services are defined first**\ 
  
- As instance, giving:
+ For example:
  
  
  .. code-block:: perl
@@ -234,14 +233,14 @@ The rules with connexions parameters are:
     --dbservice s1 --host h1 --port 5433
  
  
- Means "service=s1" and "host=h1 port=5433" in this order. If the service
- supports only one host, the second is ignored
+ Means use "service=s1" and "host=h1 port=5433" in this order. If the service
+ supports only one host, the second is ignored.
  
 
 
 \ **Mutual exclusion between both methods**\ 
  
- You can not overwrite services connexions variables with parameters \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\ 
+ You can not overwrite service connection variables with parameters \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\ 
  
 
 
@@ -250,14 +249,14 @@ SERVICES
 ========
 
 
-Here is the list, descriptions and parameters of available services.
+Descriptions and parameters of available services.
 
 
 \ **autovacuum**\  (8.1+)
  
  Check the autovacuum activity on the cluster.
  
- Perfdata contains the age of oldest autovacuum and the number of worker by kind
+ Perfdata contains the age of oldest autovacuum and the number of workers by type
  (VACUUM, VACUUM ANALYZE, ANALYZE, VACUUM FREEZE).
  
  Thresholds, if any, are ignored.
@@ -266,9 +265,9 @@ Here is the list, descriptions and parameters of available services.
 
 \ **backends**\  (all)
  
- Check the total number of connexions on the cluster.
+ Check the total number of connections on the cluster.
  
- Perfdata contains the number of connexions per database.
+ Perfdata contains the number of connections per database.
  
  Critical and Warning thresholds accept either a raw number or a percentage (eg.
  80%). When a threshold is in percent, it is compared to the cluster parameter
@@ -278,20 +277,20 @@ Here is the list, descriptions and parameters of available services.
 
 \ **backends_status**\  (8.2+)
  
- Check and report the status of the backends. Depending to your PostgreSQL
- version, status are: idle, idle in transaction, idle in transaction (aborted)
- (>=9.0 only), fastpath function call, active, waiting for lock, undefined,
- disabled and insufficient privilege. The last one appears when you are not
- allowed to see the status of other connexions.
+ Check and report the status of the backends. Depending on your PostgreSQL
+ version, statuses are: *idle*, *idle in transaction*, *idle in transaction (aborted)*
+ (>=9.0 only), *fastpath function call*, *active*, *waiting for lock*, *undefined*,
+ *disabled*, and *insufficient privilege*. The last one appears when you are not
+ allowed to see the statuses of other connections.
  
- This service supports argument \ ``--exclude REGEX``\  to exclude queries
- matching the given regexp from the check. You can give multiple
+ This service supports the argument \ ``--exclude REGEX``\  to exclude queries
+ matching the given regular expression from the check. You can use multiple
  \ ``--exclude REGEX``\ .
  
- Critical and Warning thresholds are optionnal. They accept a list of
- 'status_label=value' separated by comma. Available labels are idle, idle_xact,
- aborted_xact, fastpath, active and waiting. Values are raw numbers and empty
- list are forbidden. Here is an example:
+ Critical and Warning thresholds are optional. They accept a list of
+ 'status_label=value' separated by comma. Available labels are *idle*, *idle_xact*,
+ *aborted_xact*, *fastpath*, *active*, and *waiting*. Values are raw numbers, and empty
+ lists are forbidden. Here is an example:
  
  
  .. code-block:: perl
@@ -300,9 +299,9 @@ Here is the list, descriptions and parameters of available services.
  
  
  Perfdata contains the number of backends for each status and the oldest one for
- each of them for 8.2+.
+ each of them, for 8.2+.
  
- Note that the number of backend reported as Nagios message \ **includes**\ 
+ Note that the number of backends reported in the Nagios message \ **includes**\ 
  excluded backend.
  
 
@@ -315,20 +314,20 @@ Here is the list, descriptions and parameters of available services.
  
  Perfdata contains the size difference for each database since last call.
  
- Critical and Warning thresholds accept either a raw number, a percentage or a
+ Critical and Warning thresholds accept either a raw number, a percentage, or a
  size (eg. 2.5G).
  
 
 
 \ **wal_files**\  (8.1+)
  
- Check the number of wal files.
+ Check the number of WAL files.
  
- Perfdata returns the total number of wal files, current number of written wal,
- the current number of recycled wal and the rate of wal written to disk since
+ Perfdata returns the total number of WAL files, current number of written WALs,
+ the current number of recycled WALs and the rate of WAL written to disk since
  last execution on master clusters.
  
- Critical and Warning thresholds accept either a raw number of file or a
+ Critical and Warning thresholds accept either a raw number of files or a
  percentage. In case of percentage, the limit is computed based on:
  
  
@@ -346,7 +345,7 @@ Here is the list, descriptions and parameters of available services.
  
  
  If \ ``wal_keep_segments``\  is set for 9.0 and above, the limit is the greatest
- between the following formulas :
+ of the following formulas :
  
  
  .. code-block:: perl
@@ -359,11 +358,11 @@ Here is the list, descriptions and parameters of available services.
 
 \ **ready_archives**\  (8.1+)
  
- Check the number of wal files ready to archive.
+ Check the number of WAL files ready to archive.
  
- Perfdata returns the number of wal files waiting to be archived.
+ Perfdata returns the number of WAL files waiting to be archived.
  
- Critical and Warning thresholds only accept a raw number of file
+ Critical and Warning thresholds only accept a raw number of files.
  
 
 
@@ -376,28 +375,27 @@ Here is the list, descriptions and parameters of available services.
  PostgreSQL 9.1+.
  
  Perfdata returns oldest analyze per database in seconds. With PostgreSQL
- 9.1+, it returns the number of [auto]analyses per database since last
- call as well.
+ 9.1+, the number of [auto]analyzes per database since last execution is also returned.
  
  Critical and Warning thresholds only accept an interval (eg. 1h30m25s)
- and apply on the oldest analyse maintenance.
+ and apply to the oldest execution of analyze.
  
 
 
 \ **last_vacuum**\  (8.2+)
  
- Check on each databases that the oldest vacuum (from autovacuum or not) is not
+ Check that the oldest vacuum (from autovacuum or otherwise) in each database in the cluster is not
  older than the given threshold.
  
  This service uses the status file (see \ ``--status-file``\  parameter) with
  PostgreSQL 9.1+.
  
  Perfdata returns oldest vacuum per database in seconds. With PostgreSQL
- 9.1+, it returns the number of [auto]vacuums per database since last
- call as well.
+ 9.1+, it also returns the number of [auto]vacuums per database since last
+ execution.
  
  Critical and Warning thresholds only accept an interval (eg. 1h30m25s)
- and apply on the oldest vacuum.
+ and apply to the oldest vacuum.
  
 
 
@@ -405,10 +403,11 @@ Here is the list, descriptions and parameters of available services.
  
  Check the number of locks on the hosts.
  
- Perfdata returns the number of lock for kind of lock.
+ Perfdata returns the number of locks, by type.
  
- Critical and Warning thresholds accept either a raw number of lock or a
- percentage. In case of percentage, it is computed against the following limits
+ Critical and Warning thresholds accept either a raw number of locks or a
+ percentage. For percentage, it is computed using the following:
+ 
  for 7.4 to 8.1:
  
  
@@ -433,32 +432,32 @@ Here is the list, descriptions and parameters of available services.
  
  This service uses the status file (see \ ``--status-file``\  parameter).
  
- Perfdata contains differentials of pg_stat_bgwriter counters since last
- call.
+ Perfdata contains the difference from the pg_catalog.pg_stat_bgwriter counters since last
+ execution.
  
- Critical and Warning thresholds are optionnal. If set, they only accept a
+ Critical and Warning thresholds are optional. If set, they *only* accept a
  percentage.
  
 
 
 \ **archive_folder**\ 
  
- Check if all archived WAL exist between the oldest and the latest WAL in the
+ Check if all archived WALs exist between the oldest and the latest WAL in the
  archive folder and make sure they are 16MB. The given folder must have archived
  files from ONE cluster. The version of PostgreSQL that created the archives is
- only checked on the last one for speed consideration.
+ only checked on the last one (for performance reasons).
  
  This service requires the argument \ ``--path``\  on the command line to specify the
  archive folder path to check.
  
- Optionnal argument \ ``--ignore-wal-size``\  allows to NOT check the WAL size. Usefull if your
- archived WALs are compressed. Default behaviour is to check the WALs size.
+ Optional argument \ ``--ignore-wal-size``\  skips the WAL size check. This is useful if your
+ archived WALs are compressed. Default behaviour is to check the WAL size.
  
- Optionnal argument \ ``--suffix``\  allows you define the prefix of your archived
- WALs. Usefull if they are compressed with an extension (eg. .gz, .bz2, ...).
+ Optional argument \ ``--suffix``\  allows you define the prefix of your archived
+ WALs. Useful if they are compressed with an extension (eg. .gz, .bz2, ...).
  Default is no suffix.
  
- Perfdata contains the number of WAL archived and the age of the latest one.
+ Perfdata contains the number of WALs archived and the age of the most recent one.
  
  Critical and Warning define the max age of the latest archived WAL as an
  interval (eg. 5m or 300s ).
@@ -467,25 +466,25 @@ Here is the list, descriptions and parameters of available services.
 
 \ **minor_version**\  (all)
  
- Check if the cluster is running the latest minor version of PostgreSQL.
+ Check if the cluster is running the most recent minor version of PostgreSQL.
  
- Latest version of PostgreSQL can be fetch from PostgreSQL official
- website if check_pgactivity can access it or given as a parameter.
+ Latest version of PostgreSQL can be fetched from PostgreSQL official
+ website if check_pgactivity can access it or it is given as a parameter.
  
- Without \ ``--critical``\  or \ ``--warning``\  parameters, this service attempt
- to fetch the latest version online. You can optionnaly set the path to
+ Without \ ``--critical``\  or \ ``--warning``\  parameters, this service attempts
+ to fetch the latest version online. You can optionally set the path to
  your prefered program using the parameter \ ``--path``\  (eg.
  \ ``--path '/usr/bin/wget'``\ ). Supported programs are: GET, wget, curl,
  fetch, lynx, links, links2.
  
- The online version, rise a critical alert if the minor version is not
- the latest.
+ For the online version, a critical alert is raised if the minor version is not
+ the most recent.
  
- If you do not want to (or can not) query the PostgreSQL website, you
+ If you do not want to (or cannot) query the PostgreSQL website, you
  must provide the expected version using either \ ``--warning``\  OR
- \ ``--critical``\ . The given format must be one or more MINOR version
- seperated by anything but a '.'. Eg. the following parameters are all
- equivalent:
+ \ ``--critical``\ . The given format must be one or more MINOR versions
+ separated by anything other than a '.'. Eg. the following parameters are all
+ equally valid:
  
  
  .. code-block:: perl
@@ -496,12 +495,12 @@ Here is the list, descriptions and parameters of available services.
     --critical 9.3.2/9.2.6/9.1.11/9.0.15/8.4.19
  
  
- Anything other than a 3 numbered dot-separated version will be ignored.
- if the running PostgreSQL major version is not found, the service rises an
+ Any version other than 3 numbers separated by dots will be ignored.
+ if the running PostgreSQL major version is not found, the service raises an
  unknown status.
  
- Using the offline version rises either a critical or a warning depending
- on which one has been set.
+ Using the offline version raises either a critical or a warning depending
+ on which has been set.
  
  Perfdata returns the numerical version of PostgreSQL.
  
@@ -511,31 +510,31 @@ Here is the list, descriptions and parameters of available services.
  
  Check the data delta between a cluster and its Hot standbys.
  
- You must give two or more hosts' connection parameters.
+ You must give the connection parameters for two or more clusters.
  
- Perfdata returns the data delta in bytes between the master and all given Hot
- standbys.
+ Perfdata returns the data delta in bytes between the master and each Hot
+ standby listed.
  
- Critical and Warning thresholds can takes one or two values separated by a
- comma. If only one value given, it applies on both received and replayed data.
- If two values given, the first one applies on received data, the second one on
- replayed ones. These threshold only accept a size (eg. 2.5G).
+ Critical and Warning thresholds can take one or two values separated by a
+ comma. If only one value given, it applies to both received and replayed data.
+ If two values are given, the first one applies to received data, the second one to
+ replayed data. These thresholds only accept a size (eg. 2.5G).
  
- This service rise a critical if it doesn't find exactly ONE cluster production
+ This service raises a Critical if it doesn't find exactly ONE valid master cluster
  (ie. critical when 0 or 2 and more masters).
  
 
 
 \ **streaming_delta**\  (9.1+)
  
- Check the data delta between a cluster and its standbys in streaming replication.
+ Check the data delta between a cluster and its standbys in Streaming Replication.
  
- Optionnal argument \ ``--slave``\  allows to specify some slaves that MUST be
- connected. This argument can be used as many time as you need to check multiple
- slaves connections, or you can specify multiple slaves connections at one time,
+ Optional argument \ ``--slave``\  allows you to specify some slaves that MUST be
+ connected. This argument can be used as many times as desired to check multiple
+ slave connections, or you can specify multiple slaves connections at one time
  using comma separated values. Both methods can be used in a single call. The
  given value must be of the form "APPLICATION_NAME IP".
- Any of those two following examples will check for the presence of two slaves:
+ Either of the following examples will check for the presence of two slaves:
  
  
  .. code-block:: perl
@@ -545,12 +544,12 @@ Here is the list, descriptions and parameters of available services.
  
  
  Perfdata returns the data delta in bytes between the master and all standbys
- found and the number of slave connected.
+ found and the number of slaves connected.
  
- Critical and Warning thresholds can takes one or two values separated by a
- comma. If only one value given, it applies on both flushed and replayed data.
- If two values given, the first one applies on flushed data, the second one on
- replayed ones. These thresholds only accept a size (eg. 2.5G).
+ Critical and Warning thresholds can take one or two values separated by a
+ comma. If only one value is supplied, it applies to both flushed and replayed data.
+ If two values are supplied, the first one applies to flushed data, the second one to
+ replayed data. These thresholds only accept a size (eg. 2.5G).
  
 
 
@@ -558,11 +557,11 @@ Here is the list, descriptions and parameters of available services.
  
  Check the cache hit ratio on the cluster.
  
- Perfdata contains the hit ratio per database. Template databases and
- databases that does not allow connections wont be checked, nor the
- databases which has never been accessed.
+ Perfdata contains the cache hit ratio per database. Template databases and
+ databases that do not allow connections will not be checked, nor will
+ databases which have never been used.
  
- Critical and Warning thresholds are optionnal. They only accept a percentage.
+ Critical and Warning thresholds are optional. They only accept a percentage.
  
 
 
@@ -590,10 +589,10 @@ Here is the list, descriptions and parameters of available services.
 
 \ **oldest_xact**\  (8.3+)
  
- Check the oldest idle transaction.
+ Check the oldest *idle* transaction.
  
- Perfdata contains the max/avg age time and the number of idle
- transaction per databases.
+ Perfdata contains the max/avg age and the number of idle
+ transactions per database.
  
  Critical and Warning thresholds only accept an interval.
  
@@ -602,11 +601,11 @@ Here is the list, descriptions and parameters of available services.
 \ **longest_query**\  (all)
  
  Check the longest running query in the cluster. This service supports argument
- \ ``--exclude REGEX``\  to exclude queries matching the given regexp from the check.
+ \ ``--exclude REGEX``\  to exclude queries matching the given regular expression from the check.
  You can give multiple \ ``--exclude REGEX``\ .
  
- Perfdata contains the max/avg/min running time and the number of query per
- databases.
+ Perfdata contains the max/avg/min running time and the number of queries per
+ database.
  
  Critical and Warning thresholds only accept an interval.
  
@@ -618,25 +617,25 @@ Here is the list, descriptions and parameters of available services.
  
  No perfdata is returned.
  
- This service ignore critical and warning arguments.
+ This service ignores critical and warning arguments.
  
 
 
 \ **custom_query**\  (all)
  
- Perform the given user query.
+ Execute the given user query.
  
  The query is specified with the \ ``--query parameter``\ . The first column will be
- used to perform the test for the status, if warning and critical are provided.
+ used to perform the test for the status if warning and critical are provided.
  
- The warning and critical arguments are optionnal. They can be treated as integer
- (default), size or time depending to the \ ``--type``\  argument. Warning and critical
+ The warning and critical arguments are optional. They can be of format integer
+ (default), size, or time depending on the \ ``--type``\  argument. Warning and Critical
  will be raised if they are greater than the first column, or less if the
  \ ``--reverse``\  option is used.
  
- All others columns will be used to generate the perfdata. The query has to
- display them in the perfdata format, with unit if needed (eg. "size=35B").
- If a field contains multiple values, they have to be space separated.
+ All other columns will be used to generate the perfdata. The query must
+ display them in the perfdata format, with unit if required (eg. "size=35B").
+ If a field contains multiple values, they must be separated by a space.
  
 
 
@@ -644,7 +643,7 @@ Here is the list, descriptions and parameters of available services.
  
  Check the most important settings.
  
- Warning and critical tresholds are ignored.
+ Warning and Critical tresholds are ignored.
  
  Specific parameters are :
  \ ``--work_mem``\ , \ ``--maintenance_work_mem``\ , \ ``--shared_buffers``\ ,\ ``-- wal_buffers``\ ,
@@ -655,9 +654,9 @@ Here is the list, descriptions and parameters of available services.
 
 \ **max_freeze_age**\  (all)
  
- Checks oldest database in transaction age.
+ Checks oldest database by transaction age.
  
- Critical and Warning thresholds are optionnal. They accept either a raw number
+ Critical and Warning thresholds are optional. They accept either a raw number
  or percentage for PostgreSQL 8.2 and more. If percentage is given, the
  thresholds are computed based on the "autovacuum_freeze_max_age" parameter.
  100% means some table(s) reached the maximum age and will trigger an autovacuum
@@ -666,7 +665,7 @@ Here is the list, descriptions and parameters of available services.
  Even with no threshold, this service will raise a critical alert if one database
  has a negative age.
  
- Perfdatas return the age of each database.
+ Perfdata returns the age of each database.
  
 
 
@@ -677,17 +676,17 @@ Here is the list, descriptions and parameters of available services.
  
  This service ignores critical and warning arguments.
  
- No perfdata are returned.
+ No perfdata is returned.
  
 
 
 \ **is_hot_standby**\  (9.0+)
  
- Checks if the cluster is in recovery and accepts read only queries.
+ Checks if the cluster is in recovery mode and accepts read only queries.
  
  This service ignores critical and warning arguments.
  
- No perfdata are returned.
+ No perfdata is returned.
  
 
 
@@ -697,24 +696,24 @@ Here is the list, descriptions and parameters of available services.
  You must provide the expected version using either \ ``--warning``\  OR
  \ ``--critical``\ .
  
- No perfdata are returned.
+ No perfdata is returned.
  
 
 
 \ **is_replay_paused**\  (9.1+)
  
- Checks if the replication is paused. The service will return UNKNOWN if called
- on a master server.
+ Checks if replication is paused. The service will return UNKNOWN if executed
+ against a master cluster
  
- Thresholds are optionnals. They must be specified as interval. OK will always be returned if
+ Thresholds are optional. They must be specified as interval. OK will always be returned if
  the standby is not paused, even if replication delta time hits the thresholds.
  
  Critical or warning are raised if last reported replayed timestamp is greater than given
  threshold AND some data received from the master are not applied yet. OK will always be
- returned if the standby is paused, already replayed everything from master and until some
- writes activity happen on the master.
+ returned if the standby is paused, or if the standby has already replayed everything from master and until some
+ write activity happens on the master.
  
- Perfdata returned are :
+ Perfdata returned :
    \* paused status (0 no, 1 yes, NaN if master)
    \* lag time (in second)
    \* data delta with master (0 no, 1 yes)
@@ -725,21 +724,20 @@ Here is the list, descriptions and parameters of available services.
  
  Estimate bloat on B-tree indexes.
  
- Warning and critical thresholds accept a comma separated list of either
- raw number(for a size), size (eg. 125M) or percentage. The thresholds stand for
- bloat size, not object size. If a percentage is given, the threshold will apply
+ Warning and critical thresholds accept a comma-separated list of either
+ raw number(for a size), size (eg. 125M), or percentage. The thresholds apply to
+ *bloat* size, not object size. If a percentage is given, the threshold will apply
  to the bloat size compared to the total index size. If multiple threshold
- values are passed, check_pgactivity will choose the one resulting in the biggest
- bloat size allowed.
+ values are passed, check_pgactivity will choose the largest (bloat size) value.
  
- This service supports argument \ ``--exclude REGEX``\  to exclude relation matching
- the given regexp from the check. The regexps apply on
- "schema_name.relation_name". You can give multiple \ ``--exclude REGEX``\ .
+ This service supports argument a \ ``--exclude REGEX``\ parameter to exclude relation matching
+ the regular expression. The regular expression applies to
+ "schema_name.relation_name". You can use multiple \ ``--exclude REGEX``\ parameters.
  
- Warning, with a non-superuser role, only index on table the role is granted to
- access are checked!
+ **Warning**: With a non-superuser role, only indexes on the table the role is granted access to
+ are checked!
  
- Perfdata will give the number of indexes concerned by warning and critical
+ Perfdata will return the number of indexes of concern, by warning and critical
  threshold per database.
  
 
@@ -748,21 +746,20 @@ Here is the list, descriptions and parameters of available services.
  
  Estimate bloat on tables.
  
- Warning and critical thresholds accept a comma separated list of either
- raw number(for a size), size (eg. 125M) or percentage. The thresholds stand for
- bloat size, not object size. If a percentage is given, the threshold will apply
- to the bloat size compared to the table+toast size. If multiple threshold
- values are passed, check_pgactivity will choose the one resulting in the biggest
- bloat size allowed.
+ Warning and critical thresholds accept a comma-separated list of either
+ raw number (for a size), size (eg. 125M), or percentage. The thresholds apply to
+ *bloat* size, not object size. If a percentage is given, the threshold will apply
+ to the bloat size compared to the table + TOAST size. If multiple threshold
+ values are passed, check_pgactivity will choose the largest (bloat size) value.
  
- This service supports argument \ ``--exclude REGEX``\  to exclude relation matching
- the given regexp from the check. The regexps apply on
- "schema_name.relation_name". You can give multiple \ ``--exclude REGEX``\ .
+ This service supports argument a \ ``--exclude REGEX``\ parameter to exclude relations matching
+ the regular expression. The regexps apply on
+ "schema_name.relation_name". You can use multiple \ ``--exclude REGEX``\ parameters.
  
- Warning, with a non-superuser role, only index on table the role is granted to
- access are checked!
+ **Warning**: With a non-superuser role, only tables the role is granted
+ access to are checked!
  
- Perfdata will give the number of tables concerned by warning and critical
+ Perfdata will return the number of tables of concern, by warning and critical
  threshold per database.
  
 
