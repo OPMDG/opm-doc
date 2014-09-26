@@ -94,15 +94,15 @@ offers many options to measure and monitor useful performance metrics.
 \ **--status-file**\  PATH
  
  PATH to the file where service status information will be kept between successive
- calls. Default to check_pgactivity.data in the same directory of the script.
+ calls. Default is to save check_pgactivity.data in the same directory as the script.
  
 
 
 \ **-t**\ , \ **--timeout**\  TIMEOUT
  
  Timeout to use (default: "30s"). It can be specified as raw (in seconds) or as
- an interval. This timeout will be used as *statement_timeout* for psql and URL
- timeout for the *minor_version* service.
+ an interval. This timeout will be used as ``statement_timeout`` for psql and URL
+ timeout for the ``minor_version`` service.
  
 
 
@@ -156,9 +156,11 @@ formats (eg. a size and a percentage).
  
 
 
-\ **Size**\  If THRESHOLD is a size, the following units are accepted (not case sensitive):
-b (Byte), k (KB), m (MB), g (GB), t (TB), p (PB), e (EB) or Z (ZB). Only
-integers are accepted. Eg. \ ``1.5MB``\  will be refused, use \ ``1500kB``\ .
+\ **Size**\
+
+ If THRESHOLD is a size, the following units are accepted (not case sensitive):
+ b (Byte), k (KB), m (MB), g (GB), t (TB), p (PB), e (EB) or Z (ZB). Only
+ integers are accepted. Eg. \ ``1.5MB``\  will be refused, use \ ``1500kB``\ .
  
  The factor between units is 1024 Bytes. Eg. \ ``1g = 1G = 1024\*1024\*1024.``\ 
  
@@ -170,8 +172,8 @@ CONNECTIONS
 
 
 check_pgactivity allows two different connection specifications: by service, or
-by specifying values for host, user, port, and database. Moreover, some services
-can run on multiple hosts, or can connect to multiple hosts.
+by specifying values for host, user, port, and database.
+Some services can run on multiple hosts, or connect to multiple hosts.
 
 You must specify one of the parameters below if the service needs to connect
 to your PostgreSQL instance. check_pgactivity will NOT look for
@@ -301,8 +303,8 @@ Descriptions and parameters of available services.
  Perfdata contains the number of backends for each status and the oldest one for
  each of them, for 8.2+.
  
- Note that the number of backends reported in the Nagios message \ **includes**\ 
- excluded backend.
+ Note that the number of backends reported in the Nagios message **includes**
+ excluded backends.
  
 
 
@@ -432,7 +434,7 @@ Descriptions and parameters of available services.
  
  This service uses the status file (see \ ``--status-file``\  parameter).
  
- Perfdata contains the difference from the pg_catalog.pg_stat_bgwriter counters since last
+ Perfdata contains the difference from the ``pg_catalog.pg_stat_bgwriter`` counters since last
  execution.
  
  Critical and Warning thresholds are optional. If set, they *only* accept a
@@ -483,8 +485,9 @@ Descriptions and parameters of available services.
  If you do not want to (or cannot) query the PostgreSQL website, you
  must provide the expected version using either \ ``--warning``\  OR
  \ ``--critical``\ . The given format must be one or more MINOR versions
- separated by anything other than a '.'. Eg. the following parameters are all
- equally valid:
+ separated by anything other than a '.'
+ 
+ For example, the following parameters are all equally valid:
  
  
  .. code-block:: perl
@@ -557,7 +560,7 @@ Descriptions and parameters of available services.
  
  Check the cache hit ratio on the cluster.
  
- Perfdata contains the cache hit ratio per database. Template databases and
+ Perfdata returns the cache hit ratio per database. Template databases and
  databases that do not allow connections will not be checked, nor will
  databases which have never been used.
  
