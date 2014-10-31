@@ -30,6 +30,8 @@ You'll need to create a first opm admin account::
 
     postgres@opm=# SELECT create_admin('admin1', 'admin1');
 
+**This is the user you'll need to log on the UI**
+
 
 wh_nagios
 ---------
@@ -175,6 +177,8 @@ Finally, in the directory **/usr/local/src/opm/opm-core/ui**, copy the **opm.con
         ...
         "plugins" : [ "wh_nagios" ]
     }
+
+**This user is only needed for the connection between the UI and the database. You only have to use it in the opm.conf file**
 
 
 To test the web user interface quickly, you can use either "morbo" or "hypnotoad", both installed with Mojolicious. Example with Morbo::
