@@ -1,5 +1,5 @@
 Development Information
-===========================
+------------------------------
 
 The OPM project is open to any productive contribution. 
 

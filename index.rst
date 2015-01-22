@@ -21,7 +21,7 @@ Contents:
    general/*
    opm-core/*
    probes/*
-   developpers/*
+   developers/*
    LICENSE
 
 

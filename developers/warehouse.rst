@@ -1,15 +1,16 @@
 Warehouses
-==========
+-------------
 
 Overview
---------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A warehouse is used to store a kind of data. In version 1 and 2, the only available warehouse is wh_nagios, which stores Nagios' perfdata.
 
 Each warehouse must have a unique name, lowercase, with a leading **wh_**, and it's own schema, named as the warehouse (with the leading **wh_**). All objects have to be in this schema, and should probably be configured to be dumped.
 
 Content
--------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 A warehouse should at least provide a **pg** subdirectory containing a PostgreSQL extension depending on **opm-core** extension. It can also provide an **ui** subdirectory if the warehouse wants to provide some ui content.
 Then, it can also provides various subdirectories for its need. For instance, *wh_nagios* warehouse provides a **bin** subdirectory containing the *nagios_dispatcher* tool.
@@ -21,7 +22,8 @@ Therefore, a typical warehouse structure would be::
      \_ ui
 
 Implementing the PostgreSQL extension
--------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 ACL don't have to be handled by the warehouse, as the only regular database access should be done by the ui. The ACL are handled by the opm_core extension. Only a few tables and stored functions have to be implemented (see below).
 
