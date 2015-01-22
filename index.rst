@@ -18,10 +18,10 @@ Contents:
    :maxdepth: 2
    :glob:
 
-   general/*
-   opm-core/*
-   probes/*
-   developers/*
+   general/index.rst
+   opm-core/index.rst
+   probes/index.rst
+   developers/index.rst
    LICENSE
 
 

@@ -1,4 +1,4 @@
-Developers
+Probes
 ======================
 
 .. toctree::

@@ -1,4 +1,4 @@
-Developers
+General
 ======================
 
 .. toctree::

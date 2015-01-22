@@ -1,4 +1,4 @@
-Developers
+OPM Core
 ======================
 
 .. toctree::
