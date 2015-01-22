@@ -8,6 +8,9 @@ check_pgactivity
 
 check_pgactivity - PostgreSQL plugin for Nagios
 
+
+.. contents:: :depth: 2
+
 SYNOPSIS
 ========
 
