@@ -16,7 +16,6 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :glob:
 
    general/index.rst
    opm-core/index.rst
