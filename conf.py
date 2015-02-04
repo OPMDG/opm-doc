@@ -15,11 +15,9 @@
 import sys
 import os
 
-import sphinx_rtd_theme
-
-html_theme = "sphinx_rtd_theme"
-
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+#import sphinx_rtd_theme
+#html_theme = "sphinx_rtd_theme"
+#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -51,7 +49,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Open PostgreSQL Monitoring'
-copyright = u'2014, OPMDG'
+copyright = u'2014-2015, OPMDG'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
