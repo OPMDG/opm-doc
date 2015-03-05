@@ -141,7 +141,7 @@ User interface
 The default user interface is based on the web framework Mojolicious_. You need to install:
 
 * Perl (5.10 or above)
-* Mojolicious (4.50 or above, less than 5.0)
+* Mojolicious (4.63 or above, less than 5.0)
 * Mojolicious::Plugin::I18N
 * PostgreSQL (9.3 or above)
 * A CGI/Perl webserver
