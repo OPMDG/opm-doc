@@ -141,7 +141,7 @@ User interface
 The default user interface is based on the web framework Mojolicious_. You need to install:
 
 * Perl (5.10 or above)
-* Mojolicious (4.63 or above, less than 5.0)
+* Mojolicious (4.63 or above, **less than 5.0**)
 * Mojolicious::Plugin::I18N (version 0.9)
 * DBD::Pg perl module
 * PostgreSQL (9.3 or above)
@@ -151,7 +151,9 @@ You can install "Mojolicious" using CPAN or your Linux distribution package syst
 
     curl -L cpanmin.us | perl - Mojolicious@4.99
     curl -L cpanmin.us | perl - Mojolicious::Plugin::I18N@0.9
-
+    curl -L cpanmin.us | perl - DBI
+    curl -L cpanmin.us | perl - DBD::Pg
+    
 To install the UI plugin "wh_nagios" (or any other UI plugin), from your opm directory as user "root"::
 
     root:/usr/local/src/opm# cd opm-core/ui/modules
