@@ -126,14 +126,31 @@ Install the nagios_dispatcher.pl file into the /usr/local/bin/ directory::
 
     root:~# cp /usr/local/src/opm/ /usr/local/bin
 
+**If your operating system uses inittab**
+
 Add the following line at the end of the /etc/inittab file::
 
     d1:23:respawn:/usr/bin/perl -w /usr/local/bin/nagios_dispatcher.pl --daemon --config /usr/local/etc/nagios_dispatcher.conf
 
-Reload the /etc/inittab file::
+and reload the /etc/inittab file::
 
     root:~# init q
 
+**If your operating system uses upstart**
+
+Create the file */etc/init/nagios_dispatcher.conf*, with the following content::
+
+    # This service maintains nagios_dispatcher
+
+    start on stopped rc RUNLEVEL=[2345]
+    stop on starting runlevel [016]
+
+    respawn
+    exec /usr/local/bin/nagios_dispatcher.pl -c /usr/local/etc/nagios_dispatcher.conf
+
+and start the job::
+
+    root:~# initctl start nagios_dispatcher
 
 User interface
 --------------
