@@ -55,9 +55,12 @@ Then, you need to create a crontab that will process incoming data and dispatch 
 
     * * * * * psql -c 'SELECT wh_nagios.dispatch_record()' opm
 
-This crontab can belong to any user, as long as it can connect to the PostgreSQL opm database.
+This crontab can belong to any user, as long as it can connect to the PostgreSQL
+opm database with any PostgreSQL role.
 
-To allows a opm role to import data in a warehouse, you need to call "public.grant_dispatch". As instance, for a opm role called "user1" on warehouse "wh_nagios"::
+To allow a PostgreSQL role to import data in a warehouse, you need to call
+"public.grant_dispatch". For instance, if the PostgreSQL role is "user1" and the
+warehouse is "wh_nagios"::
 
     postgres@opm=# SELECT grant_dispatcher('wh_nagios', 'user1');
 
