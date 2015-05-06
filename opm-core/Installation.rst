@@ -127,7 +127,7 @@ The dispatcher itself::
 
 Install the nagios_dispatcher.pl file into the /usr/local/bin/ directory::
 
-    root:~# cp /usr/local/src/opm/ /usr/local/bin
+    root:~# cp /usr/local/src/opm/wh_nagios/bin/nagios_dispatcher.pl /usr/local/bin
 
 **If your operating system uses inittab**
 
@@ -173,7 +173,7 @@ You can install "Mojolicious" using CPAN or your Linux distribution package syst
     curl -L cpanmin.us | perl - Mojolicious::Plugin::I18N@0.9
     curl -L cpanmin.us | perl - DBI
     curl -L cpanmin.us | perl - DBD::Pg
-    
+
 To install the UI plugin "wh_nagios" (or any other UI plugin), from your opm directory as user "root"::
 
     root:/usr/local/src/opm# cd opm-core/ui/modules
