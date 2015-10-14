@@ -386,8 +386,9 @@ Descriptions and parameters of available services.
 
  This service uses the status file (see \ ``--status-file``\  parameter).
 
- Perfdata contains the difference from the \ ``pg_stat_bgwriter``\  counters since
- last execution.
+ Perfdata contains the ratio per second for each \ ``pg_stat_bgwriter``\  counters
+ since last execution. Units Nps for checkpoints, max written clean and fsyncs
+ are the number of "events" per second.
 
  Critical and Warning thresholds are optional. If set, they \ *only*\  accept a
  percentage.
@@ -415,11 +416,12 @@ Descriptions and parameters of available services.
 
  You can use multiple \ ``--exclude REGEX``\  parameters.
 
- \ **Warning**\ : With a non-superuser role, only indexes on table the role is
- granted access to are checked!
-
  Perfdata will return the number of indexes of concern, by warning and critical
  threshold per database.
+
+ A list of the bloated indexes detail will be returned after the
+ perfdata. This list contains the fully qualified bloated index name, the
+ estimated bloat size, the index size and the bloat percentage.
 
 
 
@@ -842,6 +844,10 @@ Descriptions and parameters of available services.
 
  Perfdata will return the number of tables matching the warning and critical
  thresholds, per database.
+
+ A list of the bloated tables detail will be returned after the
+ perfdata. This list contains the fully qualified bloated table name, the
+ estimated bloat size, the table size and the bloat percentage.
 
 
 
