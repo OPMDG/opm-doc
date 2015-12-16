@@ -25,7 +25,7 @@ It's a Nagios agent but it should work fine with
 Nagios-compatible software (see below)
 
 
-Is possible to use the check_pgactivity agent with Nagios-comptabile tools such as  Icinga / Shinken /  Naemon / ....  ?
+Is possible to use the check_pgactivity agent with Nagios-compatible tools such as  Icinga / Shinken /  Naemon / ....  ?
 ----------------------------------------------------------------------------
 
 We know that the Nagios project is currently in a bad shape. But it's an industry standard. There's some very interesting Nagios forks nowadays and as long as they maintain backward compatibilty with Nagios, we should be able to use the check_pgactivity agent with them. We cannot test our agent on every Nagios-compatible software so if you do use it with Icinga, Shinken or Naemon please let us know !
