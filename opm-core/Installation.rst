@@ -32,6 +32,7 @@ You'll need to create a first opm admin account::
 
 **This is the user you'll need to log on the UI**
 
+.. _wh_nagios:
 
 wh_nagios
 ---------
@@ -64,6 +65,7 @@ warehouse is "wh_nagios"::
 
     postgres@opm=# SELECT grant_dispatcher('wh_nagios', 'user1');
 
+.. _nagios_and_nagios_dispatcher:
 
 Nagios & nagios_dispatcher
 --------------------------
@@ -105,6 +107,7 @@ Then, in your Nagios main configuration file, make sure the following parameter 
     host_perfdata_file_processing_interval=15
     service_perfdata_file_processing_interval=15
 
+.. _nagios_dispatcher:
 
 The dispatcher itself::
 
@@ -179,11 +182,15 @@ To install the UI plugin "wh_nagios" (or any other UI plugin), from your opm dir
     root:/usr/local/src/opm# cd opm-core/ui/modules
     root:/usr/local/src/opm/opm-core/ui/modules# ln -s /usr/local/src/opm/opm-wh_nagios/ui wh_nagios
 
+.. _ui_opmuser:
+
 Then, on your OPM database side, you need to create an opm user for the UI::
 
     postgres@opm=# CREATE USER opmui WITH ENCRYPTED PASSWORD 'opmui';
     postgres@opm=# SELECT * from grant_appli('opmui');
 
+
+.. _ui_configuration:
 
 Finally, in the directory **/usr/local/src/opm/opm-core/ui**, copy the **opm.conf-dist** file to **opm.conf**, and edit it to suit you needs, for instance::
 
@@ -202,6 +209,8 @@ Finally, in the directory **/usr/local/src/opm/opm-core/ui**, copy the **opm.con
 
 **This user is only needed for the connection between the UI and the database. You only have to use it in the opm.conf file**
 
+.. _ui_morbo:
+
 
 To test the web user interface quickly, you can use either "morbo" or "hypnotoad", both installed with Mojolicious. Example with Morbo::
 
@@ -216,6 +225,8 @@ Using "hypnotoad", which suit better for production::
     user:/usr/local/src/opm/ui/opm/opm-core$ hypnotoad -f script/opm
 
 Removing "-f" makes it daemonize.
+
+.. _ui_apache:
 
 If you want to use "apache", here is a quick configuration sample using CGI::
 
