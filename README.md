@@ -1,7 +1,7 @@
 OPM Documentation
 =======
 
-See http://opm.readthedocs.org/
+See http://opm.readthedocs.io/
 
 
 Compile the doc
