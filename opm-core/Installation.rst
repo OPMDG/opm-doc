@@ -220,11 +220,38 @@ To test the web user interface quickly, you can use either "morbo" or "hypnotoad
     [Fri Nov 29 12:12:53 2013] [info] Listening at "http://*:3000".
     Server available at http://127.0.0.1:3000.
 
-Using "hypnotoad", which suit better for production::
+* Using "hypnotoad", which suit better for production::
 
     user:/usr/local/src/opm/ui/opm/opm-core$ hypnotoad -f script/opm
 
-Removing "-f" makes it daemonize.
+.. note::
+
+    Removing "-f" makes it daemonize.
+
+* Using nginx for forwarding request to a "hypnotoad" application server::
+
+    upstream hypnotoad {
+      server 127.0.0.1:8080;
+    }
+
+    server {
+      listen 80;
+
+      location / {
+            proxy_pass http://hypnotoad;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto "http";
+      }
+    }
+
+.. note::
+
+  You should ensure that hypnotoad starts on boot, e.g. in **/etc/rc.local**
+
+  .. code-block:: bash
+
+    su - www-data -c 'hypnotoad /var/www/opm-core/ui/script/opm'
 
 .. _ui_apache:
 
