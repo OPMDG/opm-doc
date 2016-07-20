@@ -43,11 +43,11 @@ What is the performance impact of this tool on a postgreSQL production database?
 ----------------------------------------------------------------------------------
 
 
-The performance impact is hard to define precisely. It will rely demand
-of the freguency of the stats collection processus. You can configure
-Nagios to get stats every 30s or every 5 min : the impact on performance
+The performance impact is hard to define precisely. It will really depend
+on the frequency of the stats collection processes. You can configure
+Nagios to get stats every 30s or every 5 min: the impact on performance
 will be very different. So basically the performance impact is more a
-question of how you configure Nagios and doesn't rely depend on OPM itself.
+question of how you configure Nagios and doesn't really depend on OPM itself.
 
 
 
