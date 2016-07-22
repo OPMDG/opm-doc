@@ -177,6 +177,26 @@ You can install "Mojolicious" using CPAN or your Linux distribution package syst
     curl -L cpanmin.us | perl - DBI
     curl -L cpanmin.us | perl - DBD::Pg
 
+Alternatively, you can download the required archives and install them manually::
+
+    wget http://backpan.perl.org/authors/id/S/SR/SRI/Mojolicious-4.99.tar.gz
+    tar xzf Mojolicious-4.99.tar.gz
+    cd Mojolicious-4.99
+    perl Makefile.PL
+    make
+    make install
+    cd ..
+    wget http://backpan.perl.org/authors/id/S/SH/SHARIFULN/Mojolicious-Plugin-I18N-0.9.tar.gz
+    tar xzf Mojolicious-Plugin-I18N-0.9.tar.gz
+    cd Mojolicious-Plugin-I18N-0.9
+    make
+    make install
+
+.. note::
+
+    The `make install` commands require root privilege. Use sudo if you're not
+    running these command as root.
+
 To install the UI plugin "wh_nagios" (or any other UI plugin), from your opm directory as user "root"::
 
     root:/usr/local/src/opm# cd opm-core/ui/modules
