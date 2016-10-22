@@ -107,6 +107,28 @@ Then, in your Nagios main configuration file, make sure the following parameter 
     host_perfdata_file_processing_interval=15
     service_perfdata_file_processing_interval=15
 
+.. note::
+
+    If you're using icinga2, you need instead to:
+
+    * enable perfdata::
+
+        $ icinga2 feature enable perfdata
+
+    * configure data format in **/etc/icinga2/features-enabled/perfdata.conf**::
+
+        library "perfdata"
+        object PerfdataWriter "perfdata" {
+            host_perfdata_path = "/var/spool/icinga2/perfdata/host-perfdata"
+            service_perfdata_path = "/var/spool/icinga2/perfdata/service-perfdata"
+            rotation_interval = 15s
+            host_format_template = "DATATYPE::HOSTPERFDATA\tTIMET::$icinga.timet$\tHOSTNAME::$host.name$\tHOSTPERFDATA::$host.perfdata$\tHOSTCHECKCOMMAND::$host.check_command$\tHOSTSTATE::$host.state$\tHOSTSTATETYPE::$host.state_type$\tHOSTOUTPUT::$host.output$"
+            service_format_template = "DATATYPE::SERVICEPERFDATA\tTIMET::$icinga.timet$\tHOSTNAME::$host.name$\tSERVICEDESC::$service.name$\tSERVICEPERFDATA::$service.perfdata$\tSERVICECHECKCOMMAND::$service.check_command$\tHOSTSTATE::$host.state$\tHOSTSTATETYPE::$host.state_type$\tSERVICESTATE::$service.state$\tSERVICESTATETYPE::$service.state_type$\tSERVICEOUTPUT::$service.output$"
+        }
+
+    Icinga2 has different macros names than Nagios, for complete list see
+    `documentation <http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/monitoring-basics#host-runtime-macros>`_.
+
 .. _nagios_dispatcher:
 
 The dispatcher itself::
