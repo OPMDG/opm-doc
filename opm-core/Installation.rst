@@ -133,7 +133,7 @@ Install the nagios_dispatcher.pl file into the /usr/local/bin/ directory::
     root:~# cp /usr/local/src/opm/wh_nagios/bin/nagios_dispatcher.pl /usr/local/bin
 
 **If your operating system uses systemd**
-    
+
 Slight change to the nagios_dispatcher.cfg file::
 
     root:~# mkdir -p /usr/local/etc/
@@ -152,9 +152,9 @@ Slight change to the nagios_dispatcher.cfg file::
     EOF
 
     root:~# chown nagios /usr/local/etc/nagios_dispatcher.conf
-    
+
 Create the file /etc/systemd/system/nagios_dispatcher.service with the following content::
-    
+
     [Unit]
     Description=Nagios Dispatcher Service
     After=network.target
@@ -168,11 +168,11 @@ Create the file /etc/systemd/system/nagios_dispatcher.service with the following
 
     [Install]
     WantedBy=multi-user.target
-    
-Now start the service::
-    
-    systemctl start nagios_dispatcher
 
+Now enable and start the service::
+
+    systemctl enable nagios_dispatcher
+    systemctl start nagios_dispatcher
 
 
 **If your operating system uses inittab**
