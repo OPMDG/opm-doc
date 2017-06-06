@@ -59,7 +59,7 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **-d**\ , \ **--dbname**\  DATABASE
 
- Database name to connect to (default: "postgres").
+ Database name to connect to (default: "template1").
 
  \ **WARNING**\ ! This is not necessarily one of the database that will be
  checked. See \ ``--dbinclude``\  and \ ``--dbexclude``\  .
@@ -110,6 +110,21 @@ offers many options to measure and monitor useful performance metrics.
 
 
 
+\ **-F**\ , \ **--format**\  OUTPUT_FORMAT
+
+ The output format. Supported output are: \ ``binary``\ , \ ``debug``\ , \ ``human``\ ,
+ \ ``nagios``\  and \ ``nagios_strict``\ .
+
+ Using the \ ``binary``\  format, the results are written in a binary file (using perl
+ module \ ``Storable``\ ) given in argument \ ``--output``\ . If no output is given,
+ defaults to file \ ``check_pgactivity.out``\  in the same directory as the script.
+
+ The \ ``nagios_strict``\  format is equivalent to the \ ``nagios``\  format. The only
+ difference is that it enforces the unit follow the strict nagios specs: B, c, s
+ or %. Any unit not beeing in this list is dropped (Bps, Tps, etc).
+
+
+
 \ **--tmpdir**\  DIRECTORY
 
  Path to a directory where the script can create temporary files. The
@@ -134,6 +149,14 @@ offers many options to measure and monitor useful performance metrics.
 \ **--dump-status-file**\
 
  Dump the content of the status file and exit. This is useful for debug purpose.
+
+
+
+\ **--dump-bin-file**\  [PATH]
+
+ Dump the content of the given binary file previously created using
+ \ ``--format binary``\ . If no path is given, defaults to file
+ \ ``check_pgactivity.out``\  in the same directory as the script.
 
 
 
@@ -303,19 +326,58 @@ Descriptions and parameters of available services.
  This service requires the argument \ ``--path``\  on the command line to specify the
  archive folder path to check.
 
- Optional argument \ ``--ignore-wal-size``\  skips the WAL size check. This is useful
- if your archived WALs are compressed. Default behaviour is to check the WALs
- size.
-
  Optional argument \ ``--suffix``\  allows you define the suffix of your archived
  WALs. Useful if they are compressed with an extension (eg. .gz, .bz2, ...).
  Default is no suffix.
+
+ This service needs to read the header of one of the archives to define how many
+ segments a WAL owns. Check_pgactivity automatically handles files with
+ extensions .gz, .bz2, .xz, .zip or .7z using the following commands:
+
+
+ .. code-block:: perl
+
+    gzip -dc
+    bzip2 -dc
+    xz -dc
+    unzip -qqp
+    7z x -so
+
+
+ If needed, you can provide your own command that writes the uncompressed file
+ to standard output by using the \ ``--unarchiver``\  argument.
+
+ Optional argument \ ``--ignore-wal-size``\  skips the WAL size check. This is useful
+ if your archived WALs are compressed and check_pgactivity is unable to guess the
+ original size. Here are the commands check_pgactivity uses to guess the original
+ size of .gz, .xz or .zip files:
+
+
+ .. code-block:: perl
+
+    gzip -ql
+    xz -ql
+    unzip -qql
+
+
+ Default behaviour is to check the WALs size.
 
  Perfdata contains the number of WALs archived and the age of the most recent
  one.
 
  Critical and Warning define the max age of the latest archived WAL as an
  interval (eg. 5m or 300s ).
+
+ Sample commands:
+
+
+ .. code-block:: perl
+
+    check_pgactivity -s archive_folder --path /path/to/archives -w 15m -c 30m
+    check_pgactivity -s archive_folder --path /path/to/archives --suffix .gz -w 15m -c 30m
+    check_pgactivity -s archive_folder --path /path/to/archives --ignore-wal-size --suffix .bz2 -w 15m -c 30m
+    check_pgactivity -s archive_folder --path /path/to/archives --unarchiver "unrar p" --ignore-wal-size --suffix .rar -w 15m -c 30m
+
 
 
 
@@ -429,6 +491,10 @@ Descriptions and parameters of available services.
  perfdata. This list contains the fully qualified bloated index name, the
  estimated bloat size, the index size and the bloat percentage.
 
+ This service will work with PostgreSQL 10+ without superuser privileges
+ if you grant SELECT on table pg_statistic to the pg_monitor role, in
+ each database of the cluster : \ ``GRANT SELECT ON pg_statistic TO pg_monitor;``\
+
 
 
 \ **commit_ratio**\  (all)
@@ -456,7 +522,7 @@ Descriptions and parameters of available services.
  Warning and Critical thresholds are ignored.
 
  Specific parameters are :
- \ ``--work_mem``\ , \ ``--maintenance_work_mem``\ , \ ``--shared_buffers``\ ,\ ``-- wal_buffers``\ ,
+ \ ``--work_mem``\ , \ ``--maintenance_work_mem``\ , \ ``--shared_buffers``\ ,\ ``--wal_buffers``\ ,
  \ ``--checkpoint_segments``\ , \ ``--effective_cache_size``\ , \ ``--no_check_autovacuum``\ ,
  \ ``--no_check_fsync``\ , \ ``--no_check_enable``\ , \ ``--no_check_track_counts``\ .
 
@@ -476,7 +542,7 @@ Descriptions and parameters of available services.
 
  Perform the given user query.
 
- The query is specified with the \ ``--query parameter``\ . The first column will be
+ The query is specified with the \ ``--query``\  parameter. The first column will be
  used to perform the test for the status if warning and critical are provided.
 
  The warning and critical arguments are optional. They can be of format integer
@@ -484,9 +550,16 @@ Descriptions and parameters of available services.
  Warning and Critical will be raised if they are greater than the first column,
  or less if the \ ``--reverse``\  option is used.
 
- All other columns will be used to generate the perfdata. The query must
- display them in the perfdata format, with unit if required (eg. "size=35B").
- If a field contains multiple values, they must be separated by a space.
+ All other columns will be used to generate the perfdata. Each field name is used
+ as the name of the perfdata. The field value must contain your perfdata value
+ and its unit append to it. You can add as many field as needed. Eg.:
+
+
+ .. code-block:: perl
+
+    SELECT pg_database_size('postgres'),
+           pg_database_size('postgres')||'B' AS db_size
+
 
 
 
@@ -531,8 +604,9 @@ Descriptions and parameters of available services.
  Perfdata returns the data delta in bytes between the master and each Hot
  standby cluster listed.
 
- Critical and Warning thresholds can take one or two values separated by a
- comma. If only one value given, it applies to both received and replayed data.
+ Critical and Warning thresholds are optional. They can take one or two values
+ separated by a comma. If only one value given, it applies to both received and
+ replayed data.
  If two values are given, the first one applies to received data, the second one
  to replayed ones. These thresholds only accept a size (eg. 2.5G).
 
@@ -559,6 +633,31 @@ Descriptions and parameters of available services.
  This service ignores critical and warning arguments.
 
  No perfdata is returned.
+
+
+
+\ **invalid_indexes**\
+
+ Check if there is any invalid indexes in a database.
+
+ A critical alert is raised if an invalid index is detected.
+
+ This service supports both \ ``--dbexclude``\   and \ ``--dbinclude``\  parameters.
+
+ This service supports a \ ``--exclude REGEX``\   parameter to exclude indexes
+ matching the given regular expression. The regular expression applies to
+ "database.schema_name.index_name". This allows you to filter either on a
+ relation name for all schemas and databases, filter on a qualified named
+ index (schema + index) for all databases or filter on a qualified named
+ index in only one database.
+
+ You can use multiple \ ``--exclude REGEX``\   parameters.
+
+ Perfdata will return the number of invalid indexes per database.
+
+ A list of invalid indexes detail will be returned after the
+ perfdata. This list contains the fully qualified index name. If
+ excluded index is set, the number of exclude index is returned.
 
 
 
@@ -819,13 +918,18 @@ Descriptions and parameters of available services.
 
 
 
-\ **ready_archives**\  (8.1+)
+\ **archiver**\  (8.1+)
 
- Check the number of WAL files ready to archive.
+ Check if the archiver is working properly and the number of WAL files ready to
+ archive.
 
  Perfdata returns the number of WAL files waiting to be archived.
 
- Critical and Warning thresholds only accept a raw number of files.
+ Critical and Warning thresholds are optional. They apply on the number of file
+ waiting to be archived. They only accept a raw number of files.
+
+ Whatever the given threshold, a critical alert is raised if the archiver process
+ did not archive the oldest waiting WAL to be archived since last call.
 
 
 
@@ -838,6 +942,23 @@ Descriptions and parameters of available services.
  Critical and Warning thresholds are optional. If provided, the number of WAL
  kept by each replication slot will be compared to the threshold.
  These thresholds only accept a raw number.
+
+
+
+\ **settings**\  (9.0+)
+
+ Check if the settings changed compared to the known ones from last call of this
+ service.
+
+ The "known" settings are recorded during the very first call of the service.
+ To update the known settings after a configuration change, call this service
+ again with the argument \ ``--save``\ .
+
+ No perfdata.
+
+ Critical and Warning thresholds are ignored.
+
+ A CRITICAL is raised if at least one parameter changed.
 
 
 
@@ -862,11 +983,39 @@ Descriptions and parameters of available services.
  Perfdata returns the data delta in bytes between the master and all standbys
  found and the number of slaves connected.
 
- Critical and Warning thresholds can take one or two values separated by a
- comma. If only one value is supplied, it applies to both flushed and replayed
- data. If two values are supplied, the first one applies to flushed data,
- the second one to replayed data.
- These thresholds only accept a size (eg. 2.5G).
+ Critical and Warning thresholds are optional. They can take one or two values
+ separated by a comma. If only one value is supplied, it applies to both flushed
+ and replayed data. If two values are supplied, the first one applies to flushed
+ data, the second one to replayed data. These thresholds only accept a size
+ (eg. 2.5G).
+
+
+
+\ **table_unlogged**\
+
+ Check if table are changed to unlogged. In 9.5, you can switch between logged and unlogged.
+
+ Without \ ``--critical``\   or \ ``--warning``\  parameters, this service attempts to fetch
+ all unlogged tables.
+
+ A critical alert is raised if an unlogged table is detected.
+
+ This service supports both \ ``--dbexclude``\   and \ ``--dbinclude``\  parameters.
+
+ This service supports a \ ``--exclude REGEX``\   parameter to exclude relations
+ matching the given regular expression. The regular expression applies to
+ "database.schema_name.relation_name". This allows you to filter either on a
+ relation name for all schemas and databases, filter on a qualified named relation
+ (schema + relation) for all databases or filter on a qualified named relation in
+ only one database.
+
+ You can use multiple \ ``--exclude REGEX``\   parameters.
+
+ Perfdata will return the number of unlogged tables per database.
+
+ A list of the unlogged tables detail will be returned after the
+ perfdata. This list contains the fully qualified table name. If
+ excluded table is set, the number of exclude table is returned.
 
 
 
@@ -902,6 +1051,10 @@ Descriptions and parameters of available services.
  perfdata. This list contains the fully qualified bloated table name, the
  estimated bloat size, the table size and the bloat percentage.
 
+ This service will work with PostgreSQL 10+ without superuser privileges
+ if you grant SELECT on table pg_statistic to the pg_monitor role, in
+ each database of the cluster : \ ``GRANT SELECT ON pg_statistic TO pg_monitor;``\
+
 
 
 \ **temp_files**\  (8.1+)
@@ -925,6 +1078,8 @@ Descriptions and parameters of available services.
  Threshols applied on current temp files beeing created AND the number/size
  of temp files created since last execution.
 
+ This service will not work with PostgreSQL 10+ without superuser privileges.
+
 
 
 \ **wal_files**\  (8.1+)
@@ -932,8 +1087,8 @@ Descriptions and parameters of available services.
  Check the number of WAL files.
 
  Perfdata returns the total number of WAL files, current number of written WAL,
- the current number of recycled WAL and the rate of WAL written to disk since
- last execution on master clusters.
+ the current number of recycled WAL, the rate of WAL written to disk since
+ last execution on master clusters and the current timeline.
 
  Critical and Warning thresholds accept either a raw number of files or a
  percentage. In case of percentage, the limit is computed based on:
@@ -964,6 +1119,43 @@ Descriptions and parameters of available services.
 
 
 
+\ **stat_snapshot_age**\  (9.5+)
+
+ Check the age of the statistics snapshot (statistics collector's statistics).
+ This probe help to detect a frozen stats collector process.
+
+ Perfdata returns the statistics snapshot age.
+
+ Critical and Warning thresholds accept a raw number of seconds.
+
+
+
+\ **sequences_exhausted**\  (7.4+)
+
+ Check all sequences assigned to a column (the smallserial,serial and bigserial types),
+ and raise an alarm if the column or sequences gets too close to its maximum value.
+
+ Perfdata returns the sequence(s) that may have trigger the alert.
+
+ Critical and Warning thresholds accept a percentage of the sequence filled.
+
+
+
+\ **pgdata_permission**\  (8.2+)
+
+ Check that the data directory of the instance has 700 as permission, and belongs
+ to the system user running postgresql currently.
+
+ Checking permission works on all Unix systems.
+
+ Checking user works only in Linux systems (it uses /proc to not add
+ dependencies). Before 9.3, you need to give the expected owner using the
+ \ ``--uid``\  argument. Without this argument, the owner will not be checked.
+
+ \ **It has to be executed locally on the monitored server.**\
+
+
+
 
 EXAMPLES
 ========
@@ -975,7 +1167,7 @@ Execute service "last_vacuum" on host "host=localhost port=5432":
 
  .. code-block:: perl
 
-    check_pgactivity -h localhost -p 5492 -s last_vacuum -w 30m -c 1h30m
+    check_pgactivity -h localhost -p 5432 -s last_vacuum -w 30m -c 1h30m
 
 
 
@@ -1025,7 +1217,7 @@ VERSION
 =======
 
 
-check_pgactivity version 1.25, released on Thu Jan 28 2016.
+check_pgactivity version 2.2, released on Fri Apr 28 2017.
 
 
 LICENSING
@@ -1041,6 +1233,6 @@ AUTHORS
 
 
 Author: Open PostgreSQL Monitoring Development Group
-Copyright: (C) 2012-2016 Open PostgreSQL Development Group
+Copyright: (C) 2012-2017 Open PostgreSQL Development Group
 
 
