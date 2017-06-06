@@ -1,7 +1,7 @@
 OPM Development Group (OPMDG)
 ----------------------------------
 
-The Open PostgreSQL Development Group (OPMDG) is an international, unincorporated association of individuals and companies who have contributed to the OPM project.
+The Open PostgreSQL Monitoring Development Group (OPMDG) is an international, unincorporated association of individuals and companies who have contributed to the OPM project.
 
 The right to modify the official code base and accept contributions ('pull requests') is hold by a group called the "OPM Committers". The current team of committers is listed below:
 
