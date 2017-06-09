@@ -7,7 +7,7 @@ The right to modify the official code base and accept contributions ('pull reque
 
   * Julien Rouhaud : https://github.com/rjuju
   * Jehan-Guillaume De Rorthais : https://github.com/ioguix
-  * Damien Clochard : https://github.com/daamien
+  * Thomas Reiss : https://github.com/frost242
 
 The OPM Committers generally act as spokespeople for the OPMDG.
 
