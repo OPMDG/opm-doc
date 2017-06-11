@@ -585,6 +585,8 @@ Descriptions and parameters of available services.
 
  Check the cache hit ratio on the cluster.
 
+ This service uses the status file (see \ ``--status-file``\  parameter).
+
  Perfdata returns the cache hit ratio per database. Template databases and
  databases that do not allow connections will not be checked, nor will the
  databases which have never been accessed.
@@ -980,8 +982,13 @@ Descriptions and parameters of available services.
     --slave 'slave1 192.168.1.11','slave2 192.168.1.12'
 
 
- Perfdata returns the data delta in bytes between the master and all standbys
- found and the number of slaves connected.
+ This service supports a \ ``--exclude REGEX``\   parameter to exclude every result
+ matching the given regular expression on application_name or address ip fields.
+
+ You can use multiple \ ``--exclude REGEX``\   parameters.
+
+ Perfdata returns the data delta in bytes between the master and every standbies
+ found, the number of standbies connected and the number of excluded standbies.
 
  Critical and Warning thresholds are optional. They can take one or two values
  separated by a comma. If only one value is supplied, it applies to both flushed
@@ -1233,6 +1240,6 @@ AUTHORS
 
 
 Author: Open PostgreSQL Monitoring Development Group
-Copyright: (C) 2012-2017 Open PostgreSQL Development Group
+Copyright: (C) 2012-2017 Open PostgreSQL Monitoring Development Group
 
 
