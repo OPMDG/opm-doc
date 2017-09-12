@@ -59,9 +59,14 @@ Then, you need to create a crontab that will process incoming data and dispatch 
 This crontab can belong to any user, as long as it can connect to the PostgreSQL
 opm database with any PostgreSQL role.
 
-To allow a PostgreSQL role to import data in a warehouse, you need to call
-"public.grant_dispatch". For instance, if the PostgreSQL role is "user1" and the
-warehouse is "wh_nagios"::
+To import data in a warehouse, you need a PostgreSQL role. We recommand to
+create a dedicated role, for instance::
+
+    postgres@opm=# CREATE USER user1 LOGIN PASSWORD 'password1';
+
+You must then allow this role to import data in a warehouse, by calling
+"public.grant_dispatch". For instance, if the PostgreSQL role is "user1" and
+the warehouse is "wh_nagios"::
 
     postgres@opm=# SELECT grant_dispatcher('wh_nagios', 'user1');
 
@@ -149,6 +154,11 @@ The dispatcher itself::
     EOF
 
     root:~# chown nagios /usr/local/etc/nagios_dispatcher.conf
+
+.. note::
+
+    With our previous examples, **db_user** would've been set to ``user1`` and
+    **db_password** should be set to ``password1``.
 
 Install the nagios_dispatcher.pl file into the /usr/local/bin/ directory::
 
