@@ -8,16 +8,21 @@ To install OPM, you need a 9.3 or more PostgreSQL cluster, standard compiling to
 System
 ------
 
-The tool "pg_config" is required, install the PostgreSQL development packages of your Linux distribution if necessary. We suppose that the repositories **opm-core** and **opm-wh_nagios** are stored into **/usr/local/src/opm/**.
+Install the PostgreSQL development packages of your Linux distribution if necessary (e.g. ``postgresql96-devel`` on Red Hat, ``postgresql-server-dev-9.6`` on Debian).
+
+The tool ``pg_config`` is required. Distributions packages put it usually in ``/usr/pgsql-9.6/bin/pg_config`` (Red Hat) or ``/usr/lib/postgresql/9.6/bin/pg_config`` (Debian). It may be necessary to put it in your ``$PATH`` at least temporarily (e.g. ``export PATH=/usr/lib/postgresql/9.6/bin:$PATH``), especially if you have more than one version of PostgreSQL on the server.
+
+We suppose that the repositories **opm-core** (https://github.com/OPMDG/opm-core) and **opm-wh_nagios** (https://github.com/OPMDG/opm-wh_nagios) are stored into **/usr/local/src/opm/** (your OPM directory).
 
 OPM core
 --------
 
-We need to install the core of opm first. From your opm directory as user "root"::
+We need to install the core of OPM first. From your opm directory, as user ``root``::
 
     root:/usr/local/src/opm# cd opm-core/pg
     root:/usr/local/src/opm/opm-core/pg# make install
 
+It will copy some files into the extensions directory of PostgreSQL.
 
 Then, using a superuser role::
 
@@ -26,24 +31,24 @@ Then, using a superuser role::
     postgres@opm=# CREATE EXTENSION opm_core;
 
 
-You'll need to create a first opm admin account::
+You'll need to create a first OPM administrator account::
 
-    postgres@opm=# SELECT create_admin('admin1', 'admin1');
+    postgres@opm=# SELECT create_admin('admin1', 'agoodpassword');
 
-**This is the user you'll need to log on the UI**
+**This is the user you'll need to log on the UI.**
 
 .. _wh_nagios:
 
 wh_nagios
 ---------
 
-To install the module "wh_nagios", from your opm directory as user "root"::
+To install the module "wh_nagios", from your OPM directory as user "root"::
 
     root:/usr/local/src/opm# cd opm-wh_nagios/pg
     root:/usr/local/src/opm/wh_nagios/pg# make install
 
 
-Then, using a superuser role::
+Then, using a superuser role, in your **opm** database ::
 
     postgres@opm=# CREATE EXTENSION hstore;
     CREATE EXTENSION
@@ -52,37 +57,34 @@ Then, using a superuser role::
     CREATE EXTENSION
 
 
-Then, you need to create a crontab that will process incoming data and dispatch them. As instance, to trigger it every minute::
+Then, you need to create a crontab that will process incoming data and dispatch them. For instance, to trigger it every minute::
 
     * * * * * psql -c 'SELECT wh_nagios.dispatch_record()' opm
 
 This crontab can belong to any user, as long as it can connect to the PostgreSQL
-opm database with any PostgreSQL role.
+``opm`` database with any PostgreSQL role.
 
-To import data in a warehouse, you need a PostgreSQL role. We recommand to
+To import data into a warehouse, you need a PostgreSQL role. We recommand to
 create a dedicated role, for instance::
 
-    postgres@opm=# CREATE USER user1 LOGIN PASSWORD 'password1';
+    postgres@opm=# CREATE ROLE opm_dispatcher LOGIN PASSWORD 'anothergoodpassword';
 
 You must then allow this role to import data in a warehouse, by calling
-"public.grant_dispatch". For instance, if the PostgreSQL role is "user1" and
-the warehouse is "wh_nagios"::
+``public.grant_dispatch``. For instance, if the PostgreSQL role is ``opm`` and
+the warehouse is ``wh_nagios``::
 
-    postgres@opm=# SELECT grant_dispatcher('wh_nagios', 'user1');
+    postgres@opm=# SELECT grant_dispatcher('wh_nagios', 'opm_dispatcher');
 
 .. _nagios_and_nagios_dispatcher:
 
 Nagios & nagios_dispatcher
 --------------------------
 
-The dispatcher "nagios_dispatcher" aimed to dispatch perfdata from Nagios files to the "wh_nagios" warehouse.
+The dispatcher ``nagios_dispatcher.pl`` aims to dispatch perfdata from Nagios files to the ``wh_nagios`` warehouse.
 
-"nagios_dispatcher" require the DBD::Pg perl module. Make sure to install it on your system . Eg. under debian::
+``nagios_dispatcher`` requires the DBD::Pg perl module. It is packaged in ``perl-DBD-Pg`` (Red Hat), ``libdbd-pg-perl`` (Debian) or in the CPAN.
 
-    root:~# apt-get install libdbd-pg-perl
-
-
-We'll need first to setup Nagios to create its perdata files that "nagios_dispatcher" will poll and consume. As user "root", create to required command file and destination folder::
+We'll need first to setup Nagios to create its perfdata files that "nagios_dispatcher" will poll and consume. As ``root``, create the command file and destination folder::
 
 
     root:~# mkdir -p /var/lib/nagios3/spool/perfdata/
@@ -114,13 +116,13 @@ Then, in your Nagios main configuration file, make sure the following parameter 
 
 .. note::
 
-    If you're using icinga2, you need instead to:
+    If you're using Icinga2 instead of Nagios, you need instead to:
 
     * enable perfdata::
 
         $ icinga2 feature enable perfdata
 
-    * configure data format in **/etc/icinga2/features-enabled/perfdata.conf**::
+    * configure data format in ``/etc/icinga2/features-enabled/perfdata.conf``::
 
         library "perfdata"
         object PerfdataWriter "perfdata" {
@@ -131,12 +133,17 @@ Then, in your Nagios main configuration file, make sure the following parameter 
             service_format_template = "DATATYPE::SERVICEPERFDATA\tTIMET::$icinga.timet$\tHOSTNAME::$host.name$\tSERVICEDESC::$service.name$\tSERVICEPERFDATA::$service.perfdata$\tSERVICECHECKCOMMAND::$service.check_command$\tHOSTSTATE::$host.state$\tHOSTSTATETYPE::$host.state_type$\tSERVICESTATE::$service.state$\tSERVICESTATETYPE::$service.state_type$\tSERVICEOUTPUT::$service.output$"
         }
 
-    Icinga2 has different macros names than Nagios, for complete list see
+    Icinga2 has different macros names from Nagios. For a complete list see
     `documentation <http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/monitoring-basics#host-runtime-macros>`_.
+
+
+.. note::
+
+    Beware: the perfdata files can accumulate very quickly if not consumed by the ``nagios_dispatcher`` script.
 
 .. _nagios_dispatcher:
 
-The dispatcher itself::
+Create the dispatcher configuration file::
 
     root:~# mkdir -p /usr/local/etc/
     root:~# cat <<EOF > /usr/local/etc/nagios_dispatcher.conf
@@ -157,20 +164,28 @@ The dispatcher itself::
 
 .. note::
 
-    With our previous examples, **db_user** would've been set to ``user1`` and
-    **db_password** should be set to ``password1``.
+    With our previous examples, **db_user** would've been set to ``opm_dispatcher`` and
+    **db_password** should be set to ``anothergoodpassword``. If you use Icinga2,
+    ``directory`` must be set to ``/var/spool/icinga2/perfdata/`` (Icinga2 default
+	directory for perfdata).
 
-Install the nagios_dispatcher.pl file into the /usr/local/bin/ directory::
+Install the ``nagios_dispatcher.pl`` file into ``/usr/local/bin/`` ::
 
     root:~# cp /usr/local/src/opm/wh_nagios/bin/nagios_dispatcher.pl /usr/local/bin
 
+You can test that it works using the command line (you may have to set ``daemon=0``)::
+
+    /usr/local/bin/nagios_dispatcher.pl --verbose -c /usr/local/etc/nagios_dispatcher.conf
+
+The files in the Nagios ``perfdata`` directory must disappear one by one.
+
+
 **If your operating system uses systemd**
 
-Slight change to the nagios_dispatcher.cfg file::
+In ``nagios_dispatcher.conf`` you must set ``daemon`` to 0 and modify the connection string.
+The full file becomes::
 
-    root:~# mkdir -p /usr/local/etc/
-    root:~# cat <<EOF > /usr/local/etc/nagios_dispatcher.conf
-    daemon=1
+    daemon=0
     directory=/var/lib/nagios3/spool/perfdata/
     frequency=5
     db_connection_string=dbi:Pg:dbname=opm;host=127.0.0.1
@@ -181,11 +196,8 @@ Slight change to the nagios_dispatcher.cfg file::
     hostname_filter = /^$/ # Empty hostname. Never happens
     service_filter = /^$/ # Empty service
     label_filter = /^$/ # Empty label
-    EOF
 
-    root:~# chown nagios /usr/local/etc/nagios_dispatcher.conf
-
-Create the file /etc/systemd/system/nagios_dispatcher.service with the following content::
+Create the file ``/etc/systemd/system/nagios_dispatcher.service`` with the following content::
 
     [Unit]
     Description=Nagios Dispatcher Service
@@ -197,7 +209,6 @@ Create the file /etc/systemd/system/nagios_dispatcher.service with the following
     ExecStart=/usr/local/bin/nagios_dispatcher.pl -c /usr/local/etc/nagios_dispatcher.conf
     Restart=on-abort
 
-
     [Install]
     WantedBy=multi-user.target
 
@@ -206,20 +217,21 @@ Now enable and start the service::
     systemctl enable nagios_dispatcher
     systemctl start nagios_dispatcher
 
+Check that the ``nagios_dispatcher`` process shows up in the process list.
 
 **If your operating system uses inittab**
 
-Add the following line at the end of the /etc/inittab file::
+Add the following line at the end of the ``/etc/inittab`` file::
 
     d1:23:respawn:/usr/bin/perl -w /usr/local/bin/nagios_dispatcher.pl --daemon --config /usr/local/etc/nagios_dispatcher.conf
 
-and reload the /etc/inittab file::
+and reload it::
 
     root:~# init q
 
 **If your operating system uses upstart**
 
-Create the file */etc/init/nagios_dispatcher.conf*, with the following content::
+Create the file ``/etc/init/nagios_dispatcher.conf``, with the following content::
 
     # This service maintains nagios_dispatcher
 
@@ -239,13 +251,16 @@ User interface
 The default user interface is based on the web framework Mojolicious_. You need to install:
 
 * Perl (5.10 or above)
-* Mojolicious (4.63 or above, **less than 5.0**)
+* Mojolicious (4.63 or above, **less than 5.0 !**)
 * Mojolicious::Plugin::I18N (version 0.9)
 * DBD::Pg perl module
 * PostgreSQL (9.3 or above)
 * A CGI/Perl webserver
 
-You can install "Mojolicious" using CPAN or your Linux distribution package system if available. Here is an example with CPAN::
+You can install "Mojolicious" with your Linux distribution package system if old enough
+packages of Mojolicious are available.
+
+Another option is from CPAN::
 
     curl -L cpanmin.us | perl - Mojolicious@4.99
     curl -L cpanmin.us | perl - Mojolicious::Plugin::I18N@0.9
@@ -259,35 +274,30 @@ Alternatively, you can download the required archives and install them manually:
     cd Mojolicious-4.99
     perl Makefile.PL
     make
-    make install
+    sudo make install
     cd ..
     wget http://backpan.perl.org/authors/id/S/SH/SHARIFULN/Mojolicious-Plugin-I18N-0.9.tar.gz
     tar xzf Mojolicious-Plugin-I18N-0.9.tar.gz
     cd Mojolicious-Plugin-I18N-0.9
     make
-    make install
+    sudo make install
 
-.. note::
-
-    The `make install` commands require root privilege. Use sudo if you're not
-    running these command as root.
-
-To install the UI plugin "wh_nagios" (or any other UI plugin), from your opm directory as user "root"::
+To install the UI plugin ``wh_nagios`` (or any other UI plugin), from your ``opm`` directory as user ``root``::
 
     root:/usr/local/src/opm# cd opm-core/ui/modules
     root:/usr/local/src/opm/opm-core/ui/modules# ln -s /usr/local/src/opm/opm-wh_nagios/ui wh_nagios
 
 .. _ui_opmuser:
 
-Then, on your OPM database side, you need to create an opm user for the UI::
+Then, on your OPM database side, you need to create another user for the UI::
 
-    postgres@opm=# CREATE USER opmui WITH ENCRYPTED PASSWORD 'opmui';
+    postgres@opm=# CREATE USER opmui WITH ENCRYPTED PASSWORD 'yetanothergoodpassword';
     postgres@opm=# SELECT * from grant_appli('opmui');
 
 
 .. _ui_configuration:
 
-Finally, in the directory **/usr/local/src/opm/opm-core/ui**, copy the **opm.conf-dist** file to **opm.conf**, and edit it to suit you needs, for instance::
+Finally, in ``/usr/local/src/opm/opm-core/ui``, copy the **opm.conf-dist** file to **opm.conf**, and edit it to suit you needs, for instance::
 
     {
         ...
@@ -306,8 +316,7 @@ Finally, in the directory **/usr/local/src/opm/opm-core/ui**, copy the **opm.con
 
 .. _ui_morbo:
 
-
-To test the web user interface quickly, you can use either "morbo" or "hypnotoad", both installed with Mojolicious. Example with Morbo::
+To test the web user interface quickly, you can use either ``morbo`` or ``hypnotoad``, both installed with Mojolicious. Example with Morbo::
 
     user:/usr/local/src/opm/opm-core/ui/opm$ morbo script/opm
     [Fri Nov 29 12:12:52 2013] [debug] Helper "url_for" already exists, replacing.
@@ -315,15 +324,15 @@ To test the web user interface quickly, you can use either "morbo" or "hypnotoad
     [Fri Nov 29 12:12:53 2013] [info] Listening at "http://*:3000".
     Server available at http://127.0.0.1:3000.
 
-* Using "hypnotoad", which suit better for production::
+* Alternativeley, this example uses ``hypnotoad``, which suits production better::
 
-    user:/usr/local/src/opm/ui/opm/opm-core$ hypnotoad -f script/opm
+    user:/usr/local/src/opm-core/ui/opm$ hypnotoad -f script/opm
 
 .. note::
 
     Removing "-f" makes it daemonize.
 
-* Using nginx for forwarding request to a "hypnotoad" application server::
+* To configure nginx to forward requests to a ``hypnotoad`` application server::
 
     upstream hypnotoad {
       server 127.0.0.1:8080;
@@ -342,7 +351,7 @@ To test the web user interface quickly, you can use either "morbo" or "hypnotoad
 
 .. note::
 
-  You should ensure that hypnotoad starts on boot, e.g. in **/etc/rc.local**
+  You should ensure that hypnotoad starts on boot, e.g. in **/etc/rc.local**::
 
   .. code-block:: bash
 
@@ -350,7 +359,7 @@ To test the web user interface quickly, you can use either "morbo" or "hypnotoad
 
 .. _ui_apache:
 
-If you want to use "apache", here is a quick configuration sample using CGI::
+If you want to use Apache, here is a quick configuration sample using CGI::
 
         <VirtualHost *:80>
                 ServerAdmin webmaster@example.com
