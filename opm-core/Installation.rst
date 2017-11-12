@@ -359,7 +359,7 @@ To test the web user interface quickly, you can use either ``morbo`` or ``hypnot
 
 .. note::
 
-  You should ensure that hypnotoad starts on boot, e.g. in **/etc/rc.local**::
+  You should ensure that hypnotoad starts on boot, e.g. in **/etc/rc.local**:
 
   .. code-block:: bash
 
