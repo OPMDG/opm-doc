@@ -24,14 +24,18 @@ We need to install the core of OPM first. From your opm directory, as user ``roo
 
 It will copy some files into the extensions directory of PostgreSQL.
 
-Then, using a superuser role::
+Then, using a superuser role:
+
+.. code-block:: sql
 
     postgres@postgres=# CREATE DATABASE opm;
     postgres@postgres=# \c opm
     postgres@opm=# CREATE EXTENSION opm_core;
 
 
-You'll need to create a first OPM administrator account::
+You'll need to create a first OPM administrator account:
+
+.. code-block:: sql
 
     postgres@opm=# SELECT create_admin('admin1', 'agoodpassword');
 
@@ -48,7 +52,9 @@ To install the module "wh_nagios", from your OPM directory as user "root"::
     root:/usr/local/src/opm/wh_nagios/pg# make install
 
 
-Then, using a superuser role, in your **opm** database ::
+Then, using a superuser role, in your **opm** database:
+
+.. code-block:: sql
 
     postgres@opm=# CREATE EXTENSION hstore;
     CREATE EXTENSION
@@ -65,7 +71,9 @@ This crontab can belong to any user, as long as it can connect to the PostgreSQL
 ``opm`` database with any PostgreSQL role.
 
 To import data into a warehouse, you need a PostgreSQL role. We recommand to
-create a dedicated role, for instance::
+create a dedicated role, for instance:
+
+.. code-block:: sql
 
     postgres@opm=# CREATE ROLE opm_dispatcher LOGIN PASSWORD 'anothergoodpassword';
 
