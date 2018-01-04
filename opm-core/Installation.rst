@@ -340,6 +340,20 @@ To test the web user interface quickly, you can use either ``morbo`` or ``hypnot
 
     Removing "-f" makes it daemonize.
 
+.. note::
+
+    If you want to change default listen port when using hypnotoad, you can
+    edit the `opm.conf` file to specify listen port or any hypnotoad related
+    parameter, like this:
+
+    .. code-block:: conf
+
+        "hypnotoad" : {
+            "listen" : ["http://*:6666"],
+            "worker" : 10
+        },
+        ...,
+
 * To configure nginx to forward requests to a ``hypnotoad`` application server::
 
     upstream hypnotoad {
