@@ -34,12 +34,12 @@ We know that the Nagios project is currently in a bad shape. But it's an industr
 I don't want to use Nagios or a Nagios compatible software. Is there any hope?
 --------------------------------------------------------------------------
 
-Yes ! Currently our data collection process is based on Nagios, because it's one of the most widespread monitoring engine. So if you want to use the current version, you need to install Nagios.
+Yes! Currently our data collection process is based on Nagios, because it's one of the most widespread monitoring engine. So if you want to use the current version, you need to install Nagios.
 
-However we build OPM as an agnostic system that can be plugged on any scheduler. Therefore it is possible de developped connectors with tools like zabbix, centreon, shinken and others. We plan to do it eventually but we don't have a clear roadmap for it yet. If you're interested by such connectors, let us know !
+However we built OPM as an agnostic system that can be plugged on any scheduler. Therefore it is possible de developped connectors with tools like zabbix, centreon, shinken and others. We plan to do it eventually but we don't have a clear roadmap for it yet. If you're interested by such connectors, let us know !
 
 
-What is the performance impact of this tool on a postgreSQL production database?
+What is the performance impact of this tool on a PostgreSQL production database?
 ----------------------------------------------------------------------------------
 
 
@@ -63,4 +63,4 @@ We aim to create a free alternative to Oracle Enterprise Manager and we want to 
 I need enterprise-grade support for this software
 -------------------------------------------------
 
-DALIBO, as the main sponsor of the project, can provide training and support for both PostgreSQL and OPM. See http://www.dalibo.com for more details.
+DALIBO, as the main sponsor of the project, can provide training and support for both PostgreSQL and OPM. See https://www.dalibo.com for more details.
