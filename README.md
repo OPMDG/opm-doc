@@ -1,38 +1,34 @@
 OPM Documentation
-=======
+=================
 
-See http://opm.readthedocs.io/
+This repository is the source of the [the official
+documentation](http://opm.readthedocs.io/).
 
 
-Compile the doc
------------------------------------
+Compile the documentation
+-------------------------
 
-* Install Sphinx :
+The documentation is written using Sphinx, using reStructuredText format.
 
-``
-	apt-get install python-sphinx
-``
+In order to compile the documentation, you need sphinx.  On Debian/Ubuntu
+distrubutions, you can install it using this command:
 
-* Build :
+```bash
+sudo apt-get install python-sphinx
+```
 
-``
-	cd opm-doc
-	sphinx-build -b html . /tmp/opm-doc/
-``
+If you're familiar with the `pip` command tool, you can simply install the
+needed tools with this command:
 
-Sphinx Theme
-------------------------------------------------------------
+```bash
+pip install -r requirements
+```
 
-Install the [https://github.com/snide/sphinx_rtd_theme](Read Te Doc) theme
+Once you have sphinx available, you can compile the documentation with the
+following command:
 
-``
-        pip install sphinx_rtd_theme
-``
+```bash
+make html
+```
 
-And then add the following lines to the ``conf.py`` file:
-
-``
-import sphinx_rtd_theme
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-``
+The documentation will be available in the `_buil/html/` directory.
