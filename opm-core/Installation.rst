@@ -14,6 +14,8 @@ The tool ``pg_config`` is required. Distributions packages put it usually in ``/
 
 We suppose that the repositories **opm-core** (https://github.com/OPMDG/opm-core) and **opm-wh_nagios** (https://github.com/OPMDG/opm-wh_nagios) are stored into **/usr/local/src/opm/** (your OPM directory).
 
+.. _opm_core:
+
 OPM core
 --------
 
@@ -252,6 +254,8 @@ Create the file ``/etc/init/nagios_dispatcher.conf``, with the following content
 and start the job::
 
     root:~# initctl start nagios_dispatcher
+
+.. _user_interface:
 
 User interface
 --------------
