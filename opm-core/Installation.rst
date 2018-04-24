@@ -330,7 +330,7 @@ Finally, in ``/usr/local/src/opm/opm-core/ui``, copy the **opm.conf-dist** file 
 
 To test the web user interface quickly, you can use either ``morbo`` or ``hypnotoad``, both installed with Mojolicious. Example with Morbo::
 
-    user:/usr/local/src/opm/opm-core/ui/opm$ morbo script/opm
+    user:/usr/local/src/opm/opm-core/ui/opm$ morbo ./script/opm
     [Fri Nov 29 12:12:52 2013] [debug] Helper "url_for" already exists, replacing.
     [Fri Nov 29 12:12:52 2013] [debug] Reading config file "/home/ioguix/git/opm/ui/opm/opm.conf".
     [Fri Nov 29 12:12:53 2013] [info] Listening at "http://*:3000".
@@ -338,7 +338,7 @@ To test the web user interface quickly, you can use either ``morbo`` or ``hypnot
 
 * Alternativeley, this example uses ``hypnotoad``, which suits production better::
 
-    user:/usr/local/src/opm-core/ui/opm$ hypnotoad -f script/opm
+    user:/usr/local/src/opm-core/ui/opm$ hypnotoad -f ./script/opm
 
 .. note::
 
