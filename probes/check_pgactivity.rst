@@ -10,6 +10,7 @@ check_pgactivity - PostgreSQL plugin for Nagios
 
 .. contents:: :depth: 2
 
+
 SYNOPSIS
 ========
 
@@ -33,7 +34,7 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **-s**\ , \ **--service**\  SERVICE
 
- The nagios service to run. See section SERVICES for a description of
+ The Nagios service to run. See section SERVICES for a description of
  available services or use \ ``--list``\  for a short service and description
  list.
 
@@ -41,28 +42,36 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **-h**\ , \ **--host**\  HOST
 
- Database server host or socket directory (default: "localhost").
+ Database server host or socket directory (default: $PGHOST or "localhost")
+
+ See section \ ``CONNECTIONS``\  for more informations.
 
 
 
 \ **-U**\ , \ **--username**\  ROLE
 
- Database user name (default: "postgres").
+ Database user name (default: $PGUSER or "postgres").
+
+ See section \ ``CONNECTIONS``\  for more informations.
 
 
 
 \ **-p**\ , \ **--port**\  PORT
 
- Database server port (default: "5432").
+ Database server port (default: $PGPORT or "5432").
+
+ See section \ ``CONNECTIONS``\  for more informations.
 
 
 
 \ **-d**\ , \ **--dbname**\  DATABASE
 
- Database name to connect to (default: "template1").
+ Database name to connect to (default: $PGDATABASE or "template1").
 
  \ **WARNING**\ ! This is not necessarily one of the database that will be
  checked. See \ ``--dbinclude``\  and \ ``--dbexclude``\  .
+
+ See section \ ``CONNECTIONS``\  for more informations.
 
 
 
@@ -70,15 +79,17 @@ offers many options to measure and monitor useful performance metrics.
 
  The connection service name from pg_service.conf to use.
 
+ See section \ ``CONNECTIONS``\  for more informations.
+
 
 
 \ **--dbexclude**\  REGEXP
 
- Some services are automatically checking all the databases of your
+ Some services automatically check all the databases of your
  cluster (note: that does not mean they always need to connect on all
- of them to check them though). \ ``--dbexclude``\  allows to exclude any
- database whose name matches the given perl regular expression. You
- can repeat this option as many time as needed.
+ of them to check them though). \ ``--dbexclude``\  excludes any
+ database whose name matches the given Perl regular expression.
+ Repeat this option as many time as needed.
 
  See \ ``--dbinclude``\  as well. If a database match both dbexclude and
  dbinclude arguments, it is excluded.
@@ -87,11 +98,12 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **--dbinclude**\  REGEXP
 
- Some services are automatically checking all the databases of your
- cluster(note: that does not mean they always need to connect on all
- of them to check them though). \ ``--dbinclude``\  allows to \ **ONLY**\  check
- databases whose names match the given perl regular expression. You
- can repeat this option as many time as needed.
+ Some services automatically check all the databases of your
+ cluster (note: that does not imply that they always need to connect to all
+ of them though). Some always exclude the 'postgres'
+ database and templates. \ ``--dbinclude``\  checks \ **ONLY**\
+ databases whose names match the given Perl regular expression.
+ Repeat this option as many time as needed.
 
  See \ ``--dbexclude``\  as well. If a database match both dbexclude and
  dbinclude arguments, it is excluded.
@@ -115,13 +127,13 @@ offers many options to measure and monitor useful performance metrics.
  The output format. Supported output are: \ ``binary``\ , \ ``debug``\ , \ ``human``\ ,
  \ ``nagios``\  and \ ``nagios_strict``\ .
 
- Using the \ ``binary``\  format, the results are written in a binary file (using perl
- module \ ``Storable``\ ) given in argument \ ``--output``\ . If no output is given,
+ Using the \ ``binary``\  format, the results are written in a binary file (using
+ perl module \ ``Storable``\ ) given in argument \ ``--output``\ . If no output is given,
  defaults to file \ ``check_pgactivity.out``\  in the same directory as the script.
 
  The \ ``nagios_strict``\  format is equivalent to the \ ``nagios``\  format. The only
- difference is that it enforces the unit follow the strict nagios specs: B, c, s
- or %. Any unit not beeing in this list is dropped (Bps, Tps, etc).
+ difference is that it enforces the unit follow the strict Nagios specs: B, c, s
+ or %. Any unit absent from this list is dropped (Bps, Tps, etc).
 
 
 
@@ -140,7 +152,7 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **--status-file**\  PATH
 
- PATH to the file where service status information will be kept between
+ Path to the file where service status information is kept between
  successive calls. Default is to save check_pgactivity.data in the same
  directory as the script.
 
@@ -148,7 +160,8 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **--dump-status-file**\
 
- Dump the content of the status file and exit. This is useful for debug purpose.
+ Dump the content of the status file and exit. This is useful for debugging
+ purpose.
 
 
 
@@ -162,7 +175,7 @@ offers many options to measure and monitor useful performance metrics.
 
 \ **-t**\ , \ **--timeout**\  TIMEOUT
 
- Timeout to use (default: "30s"). It can be specified as raw (in seconds) or as
+ Timeout (default: "30s"), as raw (in seconds) or as
  an interval. This timeout will be used as \ ``statement_timeout``\  for psql and URL
  timeout for \ ``minor_version``\  service.
 
@@ -192,19 +205,18 @@ offers many options to measure and monitor useful performance metrics.
 
 
 
-
 THRESHOLDS
 ==========
 
 
-THRESHOLDS provided as warning and critical values can be a raw numbers,
-percentages, intervals or a sizes. Each available service supports one or more
+THRESHOLDS provided as warning and critical values can be raw numbers,
+percentages, intervals or sizes. Each available service supports one or more
 formats (eg. a size and a percentage).
 
 
 \ **Percentage**\
 
- If threshold is a percentage, the value should end with a '%' (no space).
+ If THRESHOLD is a percentage, the value should end with a '%' (no space).
  For instance: 95%.
 
 
@@ -224,7 +236,7 @@ formats (eg. a size and a percentage).
  b (Byte), k (KB), m (MB), g (GB), t (TB), p (PB), e (EB) or Z (ZB). Only
  integers are accepted. Eg. \ ``1.5MB``\  will be refused, use \ ``1500kB``\ .
 
- The factor between units is 1024 Bytes. Eg. \ ``1g = 1G = 1024\*1024\*1024.``\
+ The factor between units is 1024 bytes. Eg. \ ``1g = 1G = 1024\*1024\*1024.``\
 
 
 
@@ -233,13 +245,13 @@ CONNECTIONS
 ===========
 
 
-check_pgactivity allows two different connection specifications: by service, or
+check_pgactivity allows two different connection specifications: by service or
 by specifying values for host, user, port, and database.
 Some services can run on multiple hosts, or needs to connect to multiple hosts.
 
-You must specify one of the parameters below if the service needs to connect
-to your PostgreSQL instance. In other words, check_pgactivity will NOT look for
-the \ ``libpq``\  environment variables.
+You might specify one of the parameters below to connect to your PostgreSQL
+instance.  If you don't, no connection parameters are given to psql: connection
+relies on binary defaults and environment.
 
 The format for connection parameters is:
 
@@ -259,8 +271,9 @@ The format for connection parameters is:
 
 \ **Parameters**\  \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\
 
- One of these parameters is enough to define a new host. If some
- parameters are missing, default values are used.
+ One parameter is enough to define a new host. Usual environment variables
+ (PGHOST, PGPORT, PGDATABASE, PGUSER, PGSERVICE) or default values are used for
+ missing parameters.
 
  If multiple values are given, define as many host as maximum given values.
 
@@ -297,14 +310,15 @@ The format for connection parameters is:
     --dbservice s1 --host h1 --port 5433
 
 
- Means use "service=s1" and "host=h1 port=5433" in this order. If the service
- supports only one host, the second is ignored.
+ means: use "service=s1" and "host=h1 port=5433" in this order. If the service
+ supports only one host, the second host is ignored.
 
 
 
 \ **Mutual exclusion between both methods**\
 
- You can not overwrite services connections variables with parameters \ ``--host HOST``\ , \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\
+ You can not overwrite services connections variables with parameters \ ``--host HOST``\ ,
+ \ ``--port PORT``\ , \ ``--user ROLE``\  or \ ``--dbname DATABASE``\
 
 
 
@@ -324,10 +338,12 @@ Descriptions and parameters of available services.
  only checked on the last one, for performance consideration.
 
  This service requires the argument \ ``--path``\  on the command line to specify the
- archive folder path to check.
+ archive folder path to check. Obviously, it must have access to this
+ folder at the filesystem level: you may have to execute it on the archiving
+ server rather than on the PostgreSQL instance.
 
- Optional argument \ ``--suffix``\  allows you define the suffix of your archived
- WALs. Useful if they are compressed with an extension (eg. .gz, .bz2, ...).
+ The optional argument \ ``--suffix``\  defines the suffix of your archived
+ WALs; this is useful for compressed WALs (eg. .gz, .bz2, ...).
  Default is no suffix.
 
  This service needs to read the header of one of the archives to define how many
@@ -344,13 +360,13 @@ Descriptions and parameters of available services.
     7z x -so
 
 
- If needed, you can provide your own command that writes the uncompressed file
- to standard output by using the \ ``--unarchiver``\  argument.
+ If needed, provide your own command that writes the uncompressed file
+ to standard output with the \ ``--unarchiver``\  argument.
 
  Optional argument \ ``--ignore-wal-size``\  skips the WAL size check. This is useful
- if your archived WALs are compressed and check_pgactivity is unable to guess the
- original size. Here are the commands check_pgactivity uses to guess the original
- size of .gz, .xz or .zip files:
+ if your archived WALs are compressed and check_pgactivity is unable to guess
+ the original size. Here are the commands check_pgactivity uses to guess the
+ original size of .gz, .xz or .zip files:
 
 
  .. code-block:: perl
@@ -362,11 +378,14 @@ Descriptions and parameters of available services.
 
  Default behaviour is to check the WALs size.
 
- Perfdata contains the number of WALs archived and the age of the most recent
+ Perfdata contains the number of archived WALs and the age of the most recent
  one.
 
  Critical and Warning define the max age of the latest archived WAL as an
  interval (eg. 5m or 300s ).
+
+ Required privileges: unprivileged role; the system user needs read access
+ to archived WAL files.
 
  Sample commands:
 
@@ -381,14 +400,33 @@ Descriptions and parameters of available services.
 
 
 
+\ **archiver**\  (8.1+)
+
+ Check if the archiver is working properly and the number of WAL files ready to
+ archive.
+
+ Perfdata returns the number of WAL files waiting to be archived.
+
+ Critical and Warning thresholds are optional. They apply on the number of files
+ waiting to be archived. They only accept a raw number of files.
+
+ Whatever the given threshold, a critical alert is raised if the archiver
+ process did not archive the oldest waiting WAL to be archived since last call.
+
+ Required privileges: unprivileged role (10+); superuser (<10).
+
+
+
 \ **autovacuum**\  (8.1+)
 
  Check the autovacuum activity on the cluster.
 
- Perfdata contains the age of oldest running autovacuum and the number of workers
- by type (VACUUM, VACUUM ANALYZE, ANALYZE, VACUUM FREEZE).
+ Perfdata contains the age of oldest running autovacuum and the number of
+ workers by type (VACUUM, VACUUM ANALYZE, ANALYZE, VACUUM FREEZE).
 
  Thresholds, if any, are ignored.
+
+ Required privileges: unprivileged role.
 
 
 
@@ -403,6 +441,9 @@ Descriptions and parameters of available services.
  between the cluster parameters \ ``max_connections``\  and
  \ ``superuser_reserved_connections``\ .
 
+ Required privileges: an unprivileged user only sees its own queries;
+ a pg_monitor (10+) or superuser (<10) role is required to see all queries.
+
 
 
 \ **backends_status**\  (8.2+)
@@ -415,26 +456,29 @@ Descriptions and parameters of available services.
  of other connections.
 
  This service supports the argument \ ``--exclude REGEX``\  to exclude queries
- matching the given regular expression from the check.
+ matching the given regular expression.
 
  You can use multiple \ ``--exclude REGEX``\  arguments.
 
  Critical and Warning thresholds are optional. They accept a list of
  'status_label=value' separated by a comma. Available labels are \ ``idle``\ ,
  \ ``idle_xact``\ , \ ``aborted_xact``\ , \ ``fastpath``\ , \ ``active``\  and \ ``waiting``\ . Values
- are raw numbers and empty lists are forbidden. Here is an example:
+ are raw numbers or time units and empty lists are forbidden. Here is an example:
 
 
  .. code-block:: perl
 
-      -w 'waiting=5,idle_xact=10' -c 'waiting=20,idle_xact=30'
+      -w 'waiting=5,idle_xact=10' -c 'waiting=20,idle_xact=30,active=1d'
 
 
  Perfdata contains the number of backends for each status and the oldest one for
  each of them, for 8.2+.
 
  Note that the number of backends reported in Nagios message \ **includes**\
- excluded backend.
+ excluded backends.
+
+ Required privileges: an unprivileged user only sees its own queries;
+ a pg_monitor (10+) or superuser (<10) role is required to see all queries.
 
 
 
@@ -446,6 +490,8 @@ Descriptions and parameters of available services.
 
  Critical and Warning thresholds only accept an interval (eg. 1h30m25s).
 
+ Required privileges: unprivileged role (9.3+); superuser (<9.3)
+
 
 
 \ **bgwriter**\  (8.3+)
@@ -454,12 +500,14 @@ Descriptions and parameters of available services.
 
  This service uses the status file (see \ ``--status-file``\  parameter).
 
- Perfdata contains the ratio per second for each \ ``pg_stat_bgwriter``\  counters
+ Perfdata contains the ratio per second for each \ ``pg_stat_bgwriter``\  counter
  since last execution. Units Nps for checkpoints, max written clean and fsyncs
  are the number of "events" per second.
 
  Critical and Warning thresholds are optional. If set, they \ *only*\  accept a
  percentage.
+
+ Required privileges: unprivileged role.
 
 
 
@@ -474,12 +522,13 @@ Descriptions and parameters of available services.
  values are passed, check_pgactivity will choose the largest (bloat size) value.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
+ The 'postgres' database and templates are always excluded.
 
  It also supports a \ ``--exclude REGEX``\  parameter to exclude relations matching
-  the given regular expression. The regular expression applies to
-  "database.schema_name.relation_name". This allows you to filter either on a
- relation name for all schemas and databases, filter on a qualified named relation
- (schema + relation) for all databases or filter on a qualified named relation in
+ a regular expression. The regular expression applies to
+ "database.schema_name.relation_name". This enables you to filter either on a
+ relation name for all schemas and databases, on a qualified named relation
+ (schema + relation) for all databases or on a qualified named relation in
  only one database.
 
  You can use multiple \ ``--exclude REGEX``\  parameters.
@@ -487,13 +536,16 @@ Descriptions and parameters of available services.
  Perfdata will return the number of indexes of concern, by warning and critical
  threshold per database.
 
- A list of the bloated indexes detail will be returned after the
+ A list of the bloated indexes will be returned after the
  perfdata. This list contains the fully qualified bloated index name, the
  estimated bloat size, the index size and the bloat percentage.
 
- This service will work with PostgreSQL 10+ without superuser privileges
- if you grant SELECT on table pg_statistic to the pg_monitor role, in
- each database of the cluster : \ ``GRANT SELECT ON pg_statistic TO pg_monitor;``\
+ Required privileges: superuser (<10) able to log in all databases, or at least
+ those in \ ``--dbinclude``\ ; superuser (<10);
+ on PostgreSQL 10+, a user with the role pg_monitor suffices,
+ provided that you grant SELECT on the system table pg_statistic
+ to the pg_monitor role, in each database of the cluster:
+ \ ``GRANT SELECT ON pg_statistic TO pg_monitor;``\
 
 
 
@@ -506,12 +558,14 @@ Descriptions and parameters of available services.
  Perfdata contains the commit rate, rollback rate, transaction rate and rollback
  ratio for each database since last call.
 
- Critical and Warning thresholds are optional. They accept a list of coma
- separated 'label=value'. Available label are \ **rollbacks**\ , \ **rollback_rate**\
- and \ **rollback_ratio**\ , which will be compared to the number of rollback, the
+ Critical and Warning thresholds are optional. They accept a list of comma
+ separated 'label=value'. Available labels are \ **rollbacks**\ , \ **rollback_rate**\
+ and \ **rollback_ratio**\ , which will be compared to the number of rollbacks, the
  rollback rate and the rollback ratio of each database. Warning or critical will
- be raised if reported value is greater than \ **rollbacks**\ , \ **rollback_rate**\  or
- \ **rollback_ratio**\ .
+ be raised if the reported value is greater than \ **rollbacks**\ , \ **rollback_rate**\
+ or \ **rollback_ratio**\ .
+
+ Required privileges: unprivileged role.
 
 
 
@@ -526,6 +580,8 @@ Descriptions and parameters of available services.
  \ ``--checkpoint_segments``\ , \ ``--effective_cache_size``\ , \ ``--no_check_autovacuum``\ ,
  \ ``--no_check_fsync``\ , \ ``--no_check_enable``\ , \ ``--no_check_track_counts``\ .
 
+ Required privileges: unprivileged role.
+
 
 
 \ **connection**\  (all)
@@ -534,7 +590,9 @@ Descriptions and parameters of available services.
 
  No perfdata is returned.
 
- This service ignore critical and warning arguments.
+ This service ignores critical and warning arguments.
+
+ Required privileges: unprivileged role.
 
 
 
@@ -542,7 +600,7 @@ Descriptions and parameters of available services.
 
  Perform the given user query.
 
- The query is specified with the \ ``--query``\  parameter. The first column will be
+ Specify the query with \ ``--query``\ . The first column will be
  used to perform the test for the status if warning and critical are provided.
 
  The warning and critical arguments are optional. They can be of format integer
@@ -550,9 +608,9 @@ Descriptions and parameters of available services.
  Warning and Critical will be raised if they are greater than the first column,
  or less if the \ ``--reverse``\  option is used.
 
- All other columns will be used to generate the perfdata. Each field name is used
- as the name of the perfdata. The field value must contain your perfdata value
- and its unit append to it. You can add as many field as needed. Eg.:
+ All other columns will be used to generate the perfdata. Each field name is
+ used as the name of the perfdata. The field value must contain your perfdata
+ value and its unit appended to it. You can add as many fields as needed. Eg.:
 
 
  .. code-block:: perl
@@ -560,6 +618,8 @@ Descriptions and parameters of available services.
     SELECT pg_database_size('postgres'),
            pg_database_size('postgres')||'B' AS db_size
 
+
+ Required privileges: unprivileged role (depends on the query).
 
 
 
@@ -573,11 +633,13 @@ Descriptions and parameters of available services.
  Perfdata contains the size of each database.
 
  Critical and Warning thresholds accept either a raw number, a percentage, or a
- size (eg. 2.5G).  They are applied on the size difference for each database
+ size (eg. 2.5G). They are applied on the size difference for each database
  since the last execution. The aim is to detect unexpected database size
  variation.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
+
+ Required privileges: unprivileged role.
 
 
 
@@ -595,15 +657,17 @@ Descriptions and parameters of available services.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
 
+ Required privileges: unprivileged role.
+
 
 
 \ **hot_standby_delta**\  (9.0)
 
- Check the data delta between a cluster and its Hot standbys.
+ Check the data delta between a cluster and its hot standbys.
 
  You must give the connection parameters for two or more clusters.
 
- Perfdata returns the data delta in bytes between the master and each Hot
+ Perfdata returns the data delta in bytes between the master and each hot
  standby cluster listed.
 
  Critical and Warning thresholds are optional. They can take one or two values
@@ -612,8 +676,10 @@ Descriptions and parameters of available services.
  If two values are given, the first one applies to received data, the second one
  to replayed ones. These thresholds only accept a size (eg. 2.5G).
 
- This service raise a Critical if it doesn't find exactly ONE valid master
+ This service raises a Critical if it doesn't find exactly ONE valid master
  cluster (ie. critical when 0 or 2 and more masters).
+
+ Required privileges: unprivileged role.
 
 
 
@@ -624,6 +690,8 @@ Descriptions and parameters of available services.
  This service ignores critical and warning arguments.
 
  No perfdata is returned.
+
+ Required privileges: unprivileged role.
 
 
 
@@ -636,30 +704,35 @@ Descriptions and parameters of available services.
 
  No perfdata is returned.
 
+ Required privileges: unprivileged role.
+
 
 
 \ **invalid_indexes**\
 
- Check if there is any invalid indexes in a database.
+ Check if there is there are invalid indexes in a database.
 
  A critical alert is raised if an invalid index is detected.
 
  This service supports both \ ``--dbexclude``\   and \ ``--dbinclude``\  parameters.
+ The 'postgres' database and templates are always excluded.
 
  This service supports a \ ``--exclude REGEX``\   parameter to exclude indexes
- matching the given regular expression. The regular expression applies to
- "database.schema_name.index_name". This allows you to filter either on a
- relation name for all schemas and databases, filter on a qualified named
- index (schema + index) for all databases or filter on a qualified named
+ matching a regular expression. The regular expression applies to
+ "database.schema_name.index_name". This enables you to filter either on a
+ relation name for all schemas and databases, on a qualified named
+ index (schema + index) for all databases or on a qualified named
  index in only one database.
 
  You can use multiple \ ``--exclude REGEX``\   parameters.
 
  Perfdata will return the number of invalid indexes per database.
 
- A list of invalid indexes detail will be returned after the
+ A list of invalid indexes will be returned after the
  perfdata. This list contains the fully qualified index name. If
- excluded index is set, the number of exclude index is returned.
+ excluded index is set, the number of exclude indexes is returned.
+
+ Required privileges: unprivileged role able to log in all databases.
 
 
 
@@ -673,22 +746,24 @@ Descriptions and parameters of available services.
  thresholds.
 
  Critical or warning are raised if last reported replayed timestamp is greater
- than given threshold AND some data received from the master are not applied yet.
- OK will always be returned if the standby is paused, or if the standby has
- already replayed everything from master and until some write activity happens
- on the master.
+ than given threshold AND some data received from the master are not applied
+ yet.  OK will always be returned if the standby is paused, or if the standby
+ has already replayed everything from master and until some write activity
+ happens on the master.
 
  Perfdata returned:
    \* paused status (0 no, 1 yes, NaN if master)
    \* lag time (in second)
    \* data delta with master (0 no, 1 yes)
 
+ Required privileges: unprivileged role.
+
 
 
 \ **last_analyze**\  (8.2+)
 
- Check on each databases that the oldest \ ``analyze``\  (from autovacuum or not) is not
- older than the given threshold.
+ Check on each databases that the oldest \ ``analyze``\  (from autovacuum or not) is
+ not older than the given threshold.
 
  This service uses the status file (see \ ``--status-file``\  parameter) with
  PostgreSQL 9.1+.
@@ -701,6 +776,9 @@ Descriptions and parameters of available services.
  and apply to the oldest execution of analyse.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
+ The 'postgres' database and templates are always excluded.
+
+ Required privileges: unprivileged role able to log in all databases.
 
 
 
@@ -720,6 +798,9 @@ Descriptions and parameters of available services.
  and apply to the oldest vacuum.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
+ The 'postgres' database and templates are always excluded.
+
+ Required privileges: unprivileged role able to log in all databases.
 
 
 
@@ -756,6 +837,8 @@ Descriptions and parameters of available services.
   or max_pred_locks_per_transaction * (max_connections + max_prepared_transactions)
 
 
+ Required privileges: unprivileged role.
+
 
 
 \ **longest_query**\  (all)
@@ -772,7 +855,12 @@ Descriptions and parameters of available services.
  It also supports argument \ ``--exclude REGEX``\  to exclude queries matching the
  given regular expression from the check.
 
+ Above 9.0, it also supports \ ``--exclude REGEX``\  to filter out application_name.
+
  You can use multiple \ ``--exclude REGEX``\  parameters.
+
+ Required privileges: an unprivileged role only checks its own queries;
+ a pg_monitor (10+) or superuser (<10) role is required to check all queries.
 
 
 
@@ -783,15 +871,17 @@ Descriptions and parameters of available services.
  Critical and Warning thresholds are optional. They accept either a raw number
  or percentage for PostgreSQL 8.2 and more. If percentage is given, the
  thresholds are computed based on the "autovacuum_freeze_max_age" parameter.
- 100% means some table(s) reached the maximum age and will trigger an autovacuum
- freeze. Percentage thresholds should therefore be greater than 100%.
+ 100% means that some table(s) reached the maximum age and will trigger an
+ autovacuum freeze. Percentage thresholds should therefore be greater than 100%.
 
- Even with no threshold, this service will raise a critical alert if one database
+ Even with no threshold, this service will raise a critical alert if a database
  has a negative age.
 
- Perfdata return the age of each database.
+ Perfdata returns the age of each database.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
+
+ Required privileges: unprivileged role.
 
 
 
@@ -799,54 +889,56 @@ Descriptions and parameters of available services.
 
  Check if the cluster is running the most recent minor version of PostgreSQL.
 
- Latest version of PostgreSQL can be fetched from PostgreSQL official
- website if check_pgactivity can access it, or is given as a parameter.
+ Latest versions of PostgreSQL can be fetched from PostgreSQL official
+ website if check_pgactivity has access to it, or must be given as a parameter.
 
  Without \ ``--critical``\  or \ ``--warning``\  parameters, this service attempts
- to fetch the latest version online. You can optionally set the path to
- your prefered program using the parameter \ ``--path``\  (eg.
- \ ``--path '/usr/bin/wget'``\ ). Supported programs are: GET, wget, curl,
- fetch, lynx, links, links2.
+ to fetch the latest version numbers online. A critical alert is raised if the
+ minor version is not the most recent.
 
- For the online version, a critical alert is raised if the minor version is not
- the most recent.
+ You can optionally set the path to your prefered retrieval tool using
+ the \ ``--path``\  parameter (eg. \ ``--path '/usr/bin/wget'``\ ). Supported programs are:
+ GET, wget, curl, fetch, lynx, links, links2.
 
- If you do not want to (or cannot) query the PostgreSQL website, you
- must provide the expected version using either \ ``--warning``\  OR
- \ ``--critical``\ . The given format must be one or more MINOR versions
- seperated by anything but a '.'.
+ If you do not want to (or cannot) query the PostgreSQL website,
+ provide the expected versions using either \ ``--warning``\  OR
+ \ ``--critical``\ , depending on which return value you want to raise.
 
- For instance, the following parameters are all equivalent:
+ The given string must contain one or more MINOR versions separated by anything
+ but a '.'. For instance, the following parameters are all equivalent:
 
 
  .. code-block:: perl
 
-    --critical "9.3.2 9.2.6 9.1.11 9.0.15 8.4.19"
-    --critical "9.3.2, 9.2.6, 9.1.11, 9.0.15, 8.4.19"
-    --critical 9.3.2,9.2.6,9.1.11,9.0.15,8.4.19
-    --critical 9.3.2/9.2.6/9.1.11/9.0.15/8.4.19
+    --critical "10.1 9.6.6 9.5.10 9.4.15 9.3.20 9.2.24 9.1.24 9.0.23 8.4.22"
+    --critical "10.1, 9.6.6, 9.5.10, 9.4.15, 9.3.20, 9.2.24, 9.1.24, 9.0.23, 8.4.22"
+    --critical "10.1,9.6.6,9.5.10,9.4.15,9.3.20,9.2.24,9.1.24,9.0.23,8.4.22"
+    --critical "10.1/9.6.6/9.5.10/9.4.15/9.3.20/9.2.24/9.1.24/9.0.23/8.4.22"
 
 
- Any value other than 3 numbers separated by dots will be ignored.
- if the running PostgreSQL major version is not found, the service raises an
+ Any other value than 3 numbers separated by dots (before version 10.x)
+ or 2 numbers separated by dots (version 10 and above) will be ignored.
+ If the running PostgreSQL major version is not found, the service raises an
  unknown status.
 
- Using the offline version raises either a critical or a warning depending
- on which one has been set.
-
  Perfdata returns the numerical version of PostgreSQL.
+
+ Required privileges: unprivileged role; access to http://www.postgresql.org
+ required to download version numbers.
 
 
 
 \ **oldest_2pc**\  (8.1+)
 
- Check the oldest \ *two phase commit transaction*\  (aka. prepared transaction) in
+ Check the oldest \ *two-phase commit transaction*\  (aka. prepared transaction) in
  the cluster.
 
  Perfdata contains the max/avg age time and the number of prepared
- transaction per databases.
+ transactions per databases.
 
  Critical and Warning thresholds only accept an interval.
+
+ Required privileges: unprivileged role.
 
 
 
@@ -861,6 +953,12 @@ Descriptions and parameters of available services.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
 
+ Above 9.2, it supports \ ``--exclude``\  to filter out connections. Eg., to
+ filter out pg_dump and pg_dumpall, set this to 'pg_dump,pg_dumpall'.
+
+ Required privileges: an unprivileged role checks only its own queries;
+ a pg_monitor (10+) or superuser (<10) role is required to check all queries.
+
 
 
 \ **pg_dump_backup**\
@@ -869,10 +967,10 @@ Descriptions and parameters of available services.
 
  This service uses the status file (see \ ``--status-file``\  parameter).
 
- The \ ``--path``\  argument contains the location to the backup folder. The supported
- format is a glob pattern to match every folder or file you need to check. If
- appropriate, the probe should be run as user with sufficient privileges to check
- for the existence of files.
+ The \ ``--path``\  argument contains the location to the backup folder. The
+ supported format is a glob pattern matching every folder or file that you need
+ to check. If appropriate, the probe should be run as a user with sufficient
+ privileges to check for the existence of files.
 
  The \ ``--pattern``\  is required, and must contain a regular expression matching
  the backup file name, extracting the database name from the first matching
@@ -892,65 +990,97 @@ Descriptions and parameters of available services.
  Optionally, a \ ``--global-pattern``\  option can be supplied to check for an
  additional global file.
 
- The \ ``--critical``\  and \ ``--warning``\  thresholds are optional. They accept a list
- of 'metric=value' separated by a comma. Available metric are \ ``oldest``\  and
- \ ``newest``\ , respectively the age of the oldest and newest backups, and \ ``size``\ ,
- which must be the maximum variation of size since the last check, expressed
- as a size or a percentage.
+ Tip : For compatibility with pg_back, you should use
+         \ ``--path``\  '/path/\*{dump,sql}'
+         \ ``--pattern``\  '(\w+)_[0-9-_]+.dump'
+         \ ``--global-pattern``\  'pg_global_[0-9-_]+.sql'
 
- This service supports the arguments \ ``--dbinclude``\  and \ ``--dbexclude``\ , to
+ The \ ``--critical``\  and \ ``--warning``\  thresholds are optional. They accept a list
+ of 'metric=value' separated by a comma. Available metrics are \ ``oldest``\  and
+ \ ``newest``\ , respectively the age of the oldest and newest backups, and \ ``size``\ ,
+ which must be the maximum variation of size since the last check, expressed as
+ a size or a percentage. \ ``mindeltasize``\ , expressed in B, is the minimum
+ variation of size needed to raise an alert.
+
+ This service supports the \ ``--dbinclude``\  and \ ``--dbexclude``\  arguments, to
  respectively test for the presence of include or exclude files.
 
- The argument \ ``--exclude``\  allows to exclude file younger than the given
+ The argument \ ``--exclude``\  enables you to exclude files younger than an
  interval. This is useful to ignore files from a backup in progress. Eg., if
  your backup process takes 2h, set this to '125m'.
 
  Perfdata returns the age of the oldest and newest backups, as well as the size
  of the newest backups.
 
+ Required privileges: unprivileged role; the system user needs read access
+ on the directory containing the dumps (but not on the dumps themselves).
+
 
 
 \ **pga_version**\
 
- Checks if this script is running the given version of check_pgactivity.
+ Check if this script is running the given version of check_pgactivity.
  You must provide the expected version using either \ ``--warning``\  OR
  \ ``--critical``\ .
 
  No perfdata is returned.
 
+ Required privileges: none.
 
 
-\ **archiver**\  (8.1+)
 
- Check if the archiver is working properly and the number of WAL files ready to
- archive.
+\ **pgdata_permission**\  (8.2+)
 
- Perfdata returns the number of WAL files waiting to be archived.
+ Check that the instance data directory rights are 700, and belongs
+ to the system user currently running postgresql.
 
- Critical and Warning thresholds are optional. They apply on the number of file
- waiting to be archived. They only accept a raw number of files.
+ The check on rights works on all Unix systems.
 
- Whatever the given threshold, a critical alert is raised if the archiver process
- did not archive the oldest waiting WAL to be archived since last call.
+ Checking the user only works on Linux systems (it uses /proc to avoid
+ dependencies). Before 9.3, you need to provide the expected owner using the
+ \ ``--uid``\  argument, or the owner will not be checked.
+
+ Required privileges:
+  <11:superuser
+  v11: user with pg_monitor or pg_read_all_setting
+ The system user must also be able to read the folder containing
+ PGDATA: \ **the service has to be executed locally on the monitored server.**\
 
 
 
 \ **replication_slots**\  (9.4+)
 
- Check the number of WAL retained by each replication slots.
+ Check the number of WAL files and pg_replslot files retained by each
+ replication slots.
 
- Perfdata returns the number of WAL that each replication slot has to keep.
+ Perfdata returns the number of WAL and pg_replslot files that each replication
+ slot has to keep. This service needs superuser privileges since v10 to obtain
+ pg_replslot files. Unless replslot_files will be at 0.
 
- Critical and Warning thresholds are optional. If provided, the number of WAL
- kept by each replication slot will be compared to the threshold.
- These thresholds only accept a raw number.
+ Critical and Warning thresholds are optional. They accept either a raw number
+ (for backward compatibility, only wal threshold will be used) or a list
+ 'wal=value' and 'replslot=value'. Respectively number of kept wal files or
+ number of files in pg_replslot for each slot.
+
+ Required privileges:
+  <10: unprivileged role
+  v10: unprivileged role, or superuser to monitor logical replication
+  v11: unpriviledged user with GRANT EXECUTE on function pg_ls_dir(text)
+
+ Here is an example:
+
+
+ .. code-block:: perl
+
+      -w 'wal=50,replslot=20' -c 'wal=100,replslot=40'
+
 
 
 
 \ **settings**\  (9.0+)
 
- Check if the settings changed compared to the known ones from last call of this
- service.
+ Check if the current settings have changed since they were stored in the
+ service file.
 
  The "known" settings are recorded during the very first call of the service.
  To update the known settings after a configuration change, call this service
@@ -960,20 +1090,53 @@ Descriptions and parameters of available services.
 
  Critical and Warning thresholds are ignored.
 
- A CRITICAL is raised if at least one parameter changed.
+ A Critical is raised if at least one parameter changed.
+
+ Required privileges: unprivileged role.
+
+
+
+\ **sequences_exhausted**\  (7.4+)
+
+ Check all sequences assigned to a column (the smallserial, serial and bigserial
+ types), and raise an alarm if the column or sequences gets too close to the
+ maximum value.
+
+ Perfdata returns the sequences that trigger the alert.
+
+ This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
+ The 'postgres' database and templates are always excluded.
+
+ Critical and Warning thresholds accept a percentage of the sequence filled.
+
+ Required privileges: unprivileged role able to log in all databases
+
+
+
+\ **stat_snapshot_age**\  (9.5+)
+
+ Check the age of the statistics snapshot (statistics collector's statistics).
+ This probe helps to detect a frozen stats collector process.
+
+ Perfdata returns the statistics snapshot age.
+
+ Critical and Warning thresholds accept a raw number of seconds.
+
+ Required privileges: unprivileged role.
 
 
 
 \ **streaming_delta**\  (9.1+)
 
- Check the data delta between a cluster and its standbys in Streaming Replication.
+ Check the data delta between a cluster and its standbys in streaming
+ replication.
 
  Optional argument \ ``--slave``\  allows you to specify some slaves that MUST be
  connected. This argument can be used as many times as desired to check multiple
  slave connections, or you can specify multiple slaves connections at one time,
  using comma separated values. Both methods can be used in a single call. The
- given value must be of the form "APPLICATION_NAME IP".
- Either of the two following examples will check for the presence of two slaves:
+ provided values must be of the form "APPLICATION_NAME IP".
+ Both following examples will check for the presence of two slaves:
 
 
  .. code-block:: perl
@@ -982,8 +1145,8 @@ Descriptions and parameters of available services.
     --slave 'slave1 192.168.1.11','slave2 192.168.1.12'
 
 
- This service supports a \ ``--exclude REGEX``\   parameter to exclude every result
- matching the given regular expression on application_name or address ip fields.
+ This service supports a \ ``--exclude REGEX``\  parameter to exclude every result
+ matching a regular expression on application_name or IP address fields.
 
  You can use multiple \ ``--exclude REGEX``\   parameters.
 
@@ -996,33 +1159,40 @@ Descriptions and parameters of available services.
  data, the second one to replayed data. These thresholds only accept a size
  (eg. 2.5G).
 
+ Required privileges: unprivileged role.
 
 
-\ **table_unlogged**\
 
- Check if table are changed to unlogged. In 9.5, you can switch between logged and unlogged.
+\ **table_unlogged**\  (9.5+)
 
- Without \ ``--critical``\   or \ ``--warning``\  parameters, this service attempts to fetch
- all unlogged tables.
+ Check if tables are changed to unlogged. In 9.5, you can switch between logged
+ and unlogged.
+
+ Without \ ``--critical``\   or \ ``--warning``\  parameters, this service attempts to
+ fetch all unlogged tables.
 
  A critical alert is raised if an unlogged table is detected.
 
  This service supports both \ ``--dbexclude``\   and \ ``--dbinclude``\  parameters.
+ The 'postgres' database and templates are always excluded.
 
  This service supports a \ ``--exclude REGEX``\   parameter to exclude relations
- matching the given regular expression. The regular expression applies to
- "database.schema_name.relation_name". This allows you to filter either on a
- relation name for all schemas and databases, filter on a qualified named relation
- (schema + relation) for all databases or filter on a qualified named relation in
+ matching a regular expression. The regular expression applies to
+ "database.schema_name.relation_name". This enables you to filter either on a
+ relation name for all schemas and databases, on a qualified named relation
+ (schema + relation) for all databases or on a qualified named relation in
  only one database.
 
  You can use multiple \ ``--exclude REGEX``\   parameters.
 
  Perfdata will return the number of unlogged tables per database.
 
- A list of the unlogged tables detail will be returned after the
+ A list of the unlogged tables will be returned after the
  perfdata. This list contains the fully qualified table name. If
- excluded table is set, the number of exclude table is returned.
+ \ ``--exclude REGEX``\  is set, the number of excluded tables is returned.
+
+ Required privileges: unprivileged role able to log in all databases,
+ or at least those in \ ``--dbinclude``\ .
 
 
 
@@ -1038,29 +1208,33 @@ Descriptions and parameters of available services.
  largest (bloat size) value.
 
  This service supports both \ ``--dbexclude``\  and \ ``--dbinclude``\  parameters.
+ The 'postgres' database and templates are always excluded.
 
  This service supports a \ ``--exclude REGEX``\  parameter to exclude relations
  matching the given regular expression. The regular expression applies to
- "database.schema_name.relation_name". This allows you to filter either on a
- relation name for all schemas and databases, filter on a qualified named relation
- (schema + relation) for all databases or filter on a qualified named relation in
+ "database.schema_name.relation_name". This enables you to filter either on a
+ relation name for all schemas and databases, on a qualified named relation
+ (schema + relation) for all databases or on a qualified named relation in
  only one database.
 
  You can use multiple \ ``--exclude REGEX``\  parameters.
 
  \ **Warning**\ : With a non-superuser role, this service can only check the tables
- the given role is granted to read!
+ that the given role is granted to read!
 
  Perfdata will return the number of tables matching the warning and critical
  thresholds, per database.
 
- A list of the bloated tables detail will be returned after the
+ A list of the bloated tables will be returned after the
  perfdata. This list contains the fully qualified bloated table name, the
  estimated bloat size, the table size and the bloat percentage.
 
- This service will work with PostgreSQL 10+ without superuser privileges
- if you grant SELECT on table pg_statistic to the pg_monitor role, in
- each database of the cluster : \ ``GRANT SELECT ON pg_statistic TO pg_monitor;``\
+ Required privileges: superuser (<10) able to log in all databases, or at least
+ those in \ ``--dbinclude``\ ; superuser (<10);
+ on PostgreSQL 10+, a user with the role pg_monitor suffices,
+ provided that you grant SELECT on the system table pg_statistic
+ to the pg_monitor role, in each database of the cluster:
+ \ ``GRANT SELECT ON pg_statistic TO pg_monitor;``\
 
 
 
@@ -1075,17 +1249,52 @@ Descriptions and parameters of available services.
  by tablespace (see GUC temp_tablespaces).
 
  Starting with 9.2, perfdata returns as well the number of temp files per
- database since last run, the total size of temp file per database since last
+ database since last run, the total size of temp files per database since last
  run and the rate at which temp files were generated.
 
  Critical and Warning thresholds are optional. They accept either a number
  of file (raw value), a size (unit is \ **mandatory**\  to define a size) or both
  values separated by a comma.
 
- Threshols applied on current temp files beeing created AND the number/size
+ Thresholds are applied on current temp files being created AND the number/size
  of temp files created since last execution.
 
- This service will not work with PostgreSQL 10+ without superuser privileges.
+ Required privileges:
+  <10: superuser
+  v10: an unprivileged role is possible but it will not monitor databases
+ that it cannot access, nor live temp files
+  v11: an unprivileged role is possible but must be granted EXECUTE
+ on functions pg_ls_dir(text), pg_read_file(text), pg_stat_file(text);
+ the same restrictions than on v10 will still apply
+
+
+
+\ **uptime**\  (8.1+)
+
+ Returns time since postmaster start ("uptime", from 8.1),
+ since configuration reload (from 8.4),
+ and since shared memory initialization (from 10).
+
+ Please note that the uptime is unaffected when the postmaster resets
+ all its children (for example after a kill -9 on a process or a failure).
+
+ From 10+, the 'time since shared memory init' aims at detecting this situation:
+ in fact we use the age of the oldest non-client child process (usually
+ checkpointer, writer or startup). This needs pg_monitor access to read
+ pg_stat_activity.
+
+ Critical and Warning thresholds are optional. If both are set, Critical is
+ raised when the postmaster uptime or the time since shared memory
+ initialization is less than the critical threshold.
+
+ Warning is raised when the time since configuration reload is less than the
+ warning threshold.  If only a warning or critical threshold is given, it will
+ be used for both cases.  Obviously these alerts will disappear from themselves
+ once enough time has passed.
+
+ Perfdata contain the three values (when available).
+
+ Required privileges: pg_monitor on PG10+; otherwise unprivileged role.
 
 
 
@@ -1094,8 +1303,8 @@ Descriptions and parameters of available services.
  Check the number of WAL files.
 
  Perfdata returns the total number of WAL files, current number of written WAL,
- the current number of recycled WAL, the rate of WAL written to disk since
- last execution on master clusters and the current timeline.
+ the current number of recycled WAL, the rate of WAL written to disk since the
+ last execution on the master cluster and the current timeline.
 
  Critical and Warning thresholds accept either a raw number of files or a
  percentage. In case of percentage, the limit is computed based on:
@@ -1114,8 +1323,8 @@ Descriptions and parameters of available services.
     100% = 1 + checkpoint_segments * 2
 
 
- If \ ``wal_keep_segments``\  is set for 9.0 and above, the limit is the greatest
- of the following formulas :
+ If \ ``wal_keep_segments``\  is set for 9.0 to 9.4, the limit is the greatest
+ of the following formulas:
 
 
  .. code-block:: perl
@@ -1124,42 +1333,20 @@ Descriptions and parameters of available services.
     100% = 1 + wal_keep_segments + 2 * checkpoint_segments
 
 
+ For 9.5 and above, the limit is:
 
 
-\ **stat_snapshot_age**\  (9.5+)
+ .. code-block:: perl
 
- Check the age of the statistics snapshot (statistics collector's statistics).
- This probe help to detect a frozen stats collector process.
-
- Perfdata returns the statistics snapshot age.
-
- Critical and Warning thresholds accept a raw number of seconds.
+    100% =  max_wal_size      (as a number of WAL)
+          + wal_keep_segments (if set)
 
 
-
-\ **sequences_exhausted**\  (7.4+)
-
- Check all sequences assigned to a column (the smallserial,serial and bigserial types),
- and raise an alarm if the column or sequences gets too close to its maximum value.
-
- Perfdata returns the sequence(s) that may have trigger the alert.
-
- Critical and Warning thresholds accept a percentage of the sequence filled.
-
-
-
-\ **pgdata_permission**\  (8.2+)
-
- Check that the data directory of the instance has 700 as permission, and belongs
- to the system user running postgresql currently.
-
- Checking permission works on all Unix systems.
-
- Checking user works only in Linux systems (it uses /proc to not add
- dependencies). Before 9.3, you need to give the expected owner using the
- \ ``--uid``\  argument. Without this argument, the owner will not be checked.
-
- \ **It has to be executed locally on the monitored server.**\
+ Required privileges:
+  <10:superuser (<10)
+  v10:unprivileged user with pg_monitor
+  v11:unprivileged user with pg_monitor, or with grant EXECUTE on function
+ pg_ls_waldir
 
 
 
@@ -1220,11 +1407,12 @@ Execute service "hit_ratio" on host "slave" port "5433, only for databases match
 
 
 
+
 VERSION
 =======
 
 
-check_pgactivity version 2.2, released on Fri Apr 28 2017.
+check_pgactivity version 2.4, released on Wed Jan 30 2019
 
 
 LICENSING
@@ -1240,6 +1428,5 @@ AUTHORS
 
 
 Author: Open PostgreSQL Monitoring Development Group
-Copyright: (C) 2012-2017 Open PostgreSQL Monitoring Development Group
-
+Copyright: (C) 2012-2019 Open PostgreSQL Monitoring Development Group
 
