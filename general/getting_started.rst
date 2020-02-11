@@ -27,3 +27,6 @@ See the :doc:`Installation <../opm-core/Installation>` page to install:
   * the :ref:`nagios dispatcher script<nagios_and_nagios_dispatcher>` to
     retrieve the perfdata
   * the :ref:`web user interface <user_interface>`.
+
+When preparing your backup and restoration procedures,
+see :doc:`Backups <../opm-core/Backups>`.
