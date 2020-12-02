@@ -1,12 +1,15 @@
-Backups
-=======
+Backups & Restore
+=================
 
-Usual backup procedures apply. The procedure should include the way to reinstall the extensions on a virgin server.
+Backup
+------
+
+To create logical backups of the OPM database, use pg_dump as usual.
 
 Restoring logical backups
 -------------------------
 
-In a general way, restoring a backup created with pg_dump should not be a problem as the backup contains the necessary `CREATE EXTENSION` orders. The extension binaries must be present.
+In a general way, restoring a backup created with pg_dump should not be a problem, as the backup contains the necessary `CREATE EXTENSION` orders. The extensions must be installed for the target PostgreSQL version (see `Installation <Installation>`).
 
 You may wish to parallelize the restoration to spare time. In this case, it may fail with a foreign key error, as the extensions install tables with foreign keys at the very beginning of the restore, and pg_restore does not try to respect this order. The trick is to parallelize only the restoration of the biggest tables.
 
