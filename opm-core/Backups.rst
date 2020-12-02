@@ -5,6 +5,12 @@ Backup
 ------
 
 To create logical backups of the OPM database, use pg_dump as usual.
+You can save much time with parallelization, eg:
+
+.. code-block:: bash
+
+    pg_dump -Fd -j8 -d opm -f opm.dump
+
 
 Restoring logical backups
 -------------------------
@@ -13,7 +19,8 @@ In a general way, restoring a backup created with pg_dump should not be a proble
 
 You may wish to parallelize the restoration to spare time. In this case, it may fail with a foreign key error, as the extensions install tables with foreign keys at the very beginning of the restore, and pg_restore does not try to respect this order. The trick is to parallelize only the restoration of the biggest tables.
 
-The following commands assume that the database and the roles were already created :
+The following commands assume that the database and the roles were already created,
+and the backup was not done in a plain format:
 
 .. code-block:: bash
 
