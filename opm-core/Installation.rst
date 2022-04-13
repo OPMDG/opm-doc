@@ -132,16 +132,20 @@ Then, in your Nagios main configuration file, make sure the following parameter 
 
         $ icinga2 feature enable perfdata
 
-    * configure data format in ``/etc/icinga2/features-enabled/perfdata.conf``::
+    * configure data format in ``/etc/icinga2/features-enabled/perfdata.conf``:
+
+      .. code-block:: conf
 
         library "perfdata"
         object PerfdataWriter "perfdata" {
             host_perfdata_path = "/var/spool/icinga2/perfdata/host-perfdata"
             service_perfdata_path = "/var/spool/icinga2/perfdata/service-perfdata"
             rotation_interval = 15s
-            host_format_template = "DATATYPE::HOSTPERFDATA\tTIMET::$icinga.timet$\tHOSTNAME::$host.name$\tHOSTPERFDATA::$host.perfdata$\tHOSTCHECKCOMMAND::$host.check_command$\tHOSTSTATE::$host.state$\tHOSTSTATETYPE::$host.state_type$\tHOSTOUTPUT::$host.output$"
-            service_format_template = "DATATYPE::SERVICEPERFDATA\tTIMET::$icinga.timet$\tHOSTNAME::$host.name$\tSERVICEDESC::$service.name$\tSERVICEPERFDATA::$service.perfdata$\tSERVICECHECKCOMMAND::$service.check_command$\tHOSTSTATE::$host.state$\tHOSTSTATETYPE::$host.state_type$\tSERVICESTATE::$service.state$\tSERVICESTATETYPE::$service.state_type$\tSERVICEOUTPUT::$service.output$"
+            host_format_template = "DATATYPE::HOSTPERFDATA\tTIMET::$icinga.timet$\tHOSTNAME::$host.name$\tHOSTPERFDATA::$host.perfdata$\tHOSTCHECKCOMMAND::$host.check_command$\tHOSTSTATE::$host.state$\tHOSTSTATETYPE::$host.state_type$
+            service_format_template = "DATATYPE::SERVICEPERFDATA\tTIMET::$icinga.timet$\tHOSTNAME::$host.name$\tSERVICEDESC::$service.name$\tSERVICEPERFDATA::$service.perfdata$\tSERVICECHECKCOMMAND::$service.check_command$\tHOSTSTATE::$host.state$\tHOSTSTATETYPE::$host.state_type$\tSERVICESTATE::$service.state$\tSERVICESTATETYPE::$service.state_type$
         }
+
+    Note that compared to Nagios format templates, we removed the ``$HOSTOUTPUT$`` and ``$SERVICEOUTPUT$``. Icinga has a slightly different service output handling and its ``SERVICEOUTPUT`` actually mix both the equivalent of ``SERVICEOUTPUT`` and ``SERVICELONGOUTPUT`` from Nagios format, which may break the parsing.
 
     Icinga2 has different macros names from Nagios. For a complete list see
     `documentation <http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/monitoring-basics#host-runtime-macros>`_.
